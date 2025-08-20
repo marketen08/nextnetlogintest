@@ -5,11 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, Users, RefreshCw } from 'lucide-react';
 import { DataTable } from './components/data-table';
-import { columns } from './columns';
+import { createColumns } from './columns';
+import { ProveedorModal } from './components/proveedor-modal';
 import { CliPro } from '@/store/types/cliPro';
 import { useGetCliProQuery } from '@/store/services/cliPro';
+import { useState } from 'react';
 
 function ProveedoresPage() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedProveedor, setSelectedProveedor] = useState<CliPro | null>(null);
+  
   // Obtener proveedores de la API con tipo "P"
   const { 
     data: cliProData, 
@@ -18,24 +23,21 @@ function ProveedoresPage() {
     refetch 
   } = useGetCliProQuery({ tipo: 'P' });
 
-  // Convertir los datos de la API al formato esperado por la tabla
-  const proveedores: CliPro[] = cliProData?.data?.map((item: any) => ({
-    id: item.id?.toString() || '',
-    nombre: item.razonSocial || item.nombre || 'Sin nombre',
-    razonSocial: item.razonSocial || '', // Agregado para cumplir con CliPro
-    tipo: item.tipo || 'P', // Agregado para cumplir con CliPro, por defecto 'P'
-    email: item.email || undefined,
-    telefono: item.telefono || undefined,
-    direccion: item.domicilio || undefined,
-    cuit: item.numero || undefined, // El número del documento (CUIT/DNI)
-    activo: true, // Por defecto activo, ya que la API no tiene este campo
-    fechaCreacion: new Date().toISOString(), // La API no tiene este campo
-    fechaActualizacion: undefined,
-  })) || [];
+  // Los proveedores ya vienen en el formato correcto de CliPro
+  const proveedores: CliPro[] = cliProData?.data || [];
 
   const handleNuevoProveedor = () => {
-    console.log("Crear nuevo proveedor");
-    // Aquí podrías navegar a una página de creación o abrir un modal
+    setSelectedProveedor(null);
+    setModalOpen(true);
+  };
+
+  const handleEditProveedor = (proveedor: CliPro) => {
+    setSelectedProveedor(proveedor);
+    setModalOpen(true);
+  };
+
+  const handleModalSuccess = () => {
+    refetch(); // Refrescar la lista después de crear/editar
   };
 
   const handleImportar = () => {
@@ -51,6 +53,12 @@ function ProveedoresPage() {
   const handleRefresh = () => {
     refetch();
   };
+
+  // Crear columnas con las funciones necesarias
+  const columns = createColumns({
+    onEdit: handleEditProveedor,
+    onRefresh: refetch,
+  });
 
   // Mostrar error si hay problemas con la API
   if (error) {
@@ -186,11 +194,19 @@ function ProveedoresPage() {
           <DataTable 
             columns={columns} 
             data={proveedores}
-            searchPlaceholder="Buscar por nombre..."
-            searchKey="nombre"
+            searchPlaceholder="Buscar por razón social..."
+            searchKey="razonSocial"
           />
         </CardContent>
       </Card>
+
+      {/* Modal para crear/editar proveedor */}
+      <ProveedorModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        proveedor={selectedProveedor}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   );
 }
