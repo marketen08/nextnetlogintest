@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -85,6 +85,25 @@ export function ProveedorModal({
       codigoPostal: proveedor?.codigoPostal || "",
     },
   });
+
+  // Resetear el formulario cuando cambien los datos del proveedor
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        razonSocial: proveedor?.razonSocial || "",
+        nombre: proveedor?.nombre || "",
+        email: proveedor?.email || "",
+        telefono: proveedor?.telefono || "",
+        tipoDoc: proveedor?.tipoDoc || "CUIT",
+        numero: proveedor?.numero || "",
+        condicionIVA: proveedor?.condicionIVA || "",
+        domicilio: proveedor?.domicilio || "",
+        localidad: proveedor?.localidad || "",
+        provincia: proveedor?.provincia || "",
+        codigoPostal: proveedor?.codigoPostal || "",
+      });
+    }
+  }, [open, proveedor, form]);
 
   const onSubmit = async (data: FormData) => {
     try {

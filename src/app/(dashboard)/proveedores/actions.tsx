@@ -25,6 +25,7 @@ import { useState } from "react";
 import { useDeleteCliProMutation } from "@/store/services/cliPro";
 import { toast } from "sonner";
 import { Icons } from "@/components/icons";
+import { ProveedorDetailModal } from "./components/proveedor-detail-modal";
 
 interface ProveedorActionsProps {
   proveedor: CliPro;
@@ -35,11 +36,11 @@ interface ProveedorActionsProps {
 export function ProveedorActions({ proveedor, onEdit, onRefresh }: ProveedorActionsProps) {
   const [open, setOpen] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [deleteProveedor, { isLoading: isDeleting }] = useDeleteCliProMutation();
 
   const handleView = () => {
-    console.log("Ver proveedor:", proveedor.id);
-    // Aquí podrías mostrar un modal de detalles o navegar a una página de detalles
+    setShowDetailModal(true);
     setOpen(false);
   };
 
@@ -125,6 +126,14 @@ export function ProveedorActions({ proveedor, onEdit, onRefresh }: ProveedorActi
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Modal de detalles del proveedor */}
+      <ProveedorDetailModal
+        open={showDetailModal}
+        onOpenChange={setShowDetailModal}
+        proveedor={proveedor}
+        onEdit={onEdit}
+      />
     </>
   );
 }
