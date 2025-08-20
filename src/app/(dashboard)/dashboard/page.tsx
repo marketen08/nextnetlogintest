@@ -9,13 +9,14 @@ import { useAppDispatch } from '@/store/hooks';
 import { logout } from '@/store/features/user';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { is } from 'date-fns/locale';
 
 function DashboardPage() {
   const { user } = useAuth();
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const isAdmin = useHasRole('admin');
-  const isModerator = useHasRole(['admin', 'moderator']);
+  const isAdmin = useHasRole('Admin');
+  const isMecanico = useHasRole(['Admin', 'Mecanico']);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -88,6 +89,23 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
+        {/* Tarjeta de Proveedores */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h3 className="font-semibold">Proveedores</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Gestionar proveedores del sistema
+              </p>
+              <Link href="/proveedores">
+                <Button className="mt-3" size="sm">
+                  Ver Proveedores
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Tarjeta solo para moderadores y admins */}
         <RoleBasedRender allowedRoles={['admin', 'moderator']}>
           <Card>
@@ -133,7 +151,7 @@ function DashboardPage() {
         <CardContent>
           <div className="space-y-2 text-sm">
             <p><strong>¿Es Admin?</strong> {isAdmin ? 'Sí' : 'No'}</p>
-            <p><strong>¿Es Moderador?</strong> {isModerator ? 'Sí' : 'No'}</p>
+            <p><strong>¿Es Mecánico?</strong> {isMecanico ? 'Sí' : 'No'}</p>
             <p><strong>Roles disponibles:</strong> {user.roles?.join(', ') || 'Ninguno'}</p>
           </div>
         </CardContent>
