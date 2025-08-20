@@ -27,6 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 // ** Google login import
 import { useGoogleLogin, GoogleLogin } from "@react-oauth/google";
 import Link from "next/link"
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     email: z.string({ message: "El email es requerido" }).email("No es un email válido"),
@@ -34,6 +35,8 @@ const formSchema = z.object({
 });
 
 const Login = () => {
+    const router = useRouter();
+    
     // Redux
     const [loginAPI, { isLoading: isLoadingLogin }] = useLoginMutation();
     const [loginGoogleAPI, { isLoading: isLoadingGoogle }] = useLoginGoogleMutation();
@@ -108,7 +111,10 @@ const Login = () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dispatchToken = (res: any) => {
         const jwt = decodeJWT(res.accessToken);
-        dispatch(tokenReceived({ ...res, email: jwt.email, roles: jwt.roles }))
+        dispatch(tokenReceived({ ...res, email: jwt.email, roles: jwt.roles }));
+        
+        // Redirigir al dashboard después del login exitoso
+        router.push('/dashboard');
     }
 
     return (
