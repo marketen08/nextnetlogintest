@@ -3,15 +3,15 @@
 import { withAuth } from '@/components/auth-guard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-function AdminPage() {
+function MecanicoPage() {
   return (
     <div className="container mx-auto py-8">
       <Card>
         <CardHeader>
-          <CardTitle>Panel de Administración</CardTitle>
+          <CardTitle>Panel de Mecánico</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Esta página solo es accesible para administradores.</p>
+          <p>Esta página solo es accesible para mecánicos.</p>
         </CardContent>
       </Card>
     </div>
@@ -19,4 +19,4 @@ function AdminPage() {
 }
 
 // Proteger con rol específico
-export default withAuth(AdminPage, { requiredRoles: ['Admin'] });
+export default withAuth(MecanicoPage, { requiredRoles: ['Mecanico'] });
