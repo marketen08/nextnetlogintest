@@ -1,0 +1,191 @@
+/* Customización de DevExtreme para que coincida con nuestro diseño */
+
+/* Variables CSS personalizadas */
+.dx-datagrid {
+  --dx-color-primary: theme('colors.blue.600');
+  --dx-color-primary-hover: theme('colors.blue.700');
+  --dx-color-border: theme('colors.border');
+  --dx-color-background: theme('colors.background');
+  font-family: inherit;
+}
+
+/* Header de la tabla */
+.dx-datagrid-headers {
+  background-color: theme('colors.muted.DEFAULT') !important;
+  border-color: theme('colors.border') !important;
+}
+
+.dx-datagrid .dx-header-row > td {
+  background-color: theme('colors.muted.DEFAULT') !important;
+  border-color: theme('colors.border') !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem !important;
+  color: theme('colors.foreground') !important;
+}
+
+/* Filas de datos */
+.dx-datagrid-rowsview .dx-row {
+  border-color: theme('colors.border') !important;
+}
+
+.dx-datagrid-rowsview .dx-row:hover {
+  background-color: theme('colors.muted.DEFAULT/50') !important;
+}
+
+.dx-datagrid-rowsview .dx-row.dx-row-alt {
+  background-color: theme('colors.muted.DEFAULT/25') !important;
+}
+
+/* Celdas en edición */
+.dx-datagrid .dx-editor-cell {
+  background-color: theme('colors.blue.50') !important;
+  border-color: theme('colors.blue.200') !important;
+}
+
+/* Filas modificadas en modo batch */
+.dx-datagrid .dx-row.dx-edit-row {
+  background-color: theme('colors.orange.50') !important;
+}
+
+.dx-datagrid .dx-row.dx-row-modified {
+  background-color: theme('colors.yellow.50') !important;
+  border-left: 3px solid theme('colors.orange.500') !important;
+}
+
+/* Filas eliminadas en modo batch */
+.dx-datagrid .dx-row.dx-row-removed {
+  background-color: theme('colors.red.50') !important;
+  opacity: 0.6 !important;
+  text-decoration: line-through !important;
+}
+
+/* Botones de edición */
+.dx-datagrid .dx-link {
+  color: theme('colors.primary') !important;
+}
+
+.dx-datagrid .dx-link:hover {
+  color: theme('colors.primary/80') !important;
+}
+
+/* Inputs y selects */
+.dx-texteditor {
+  font-size: 0.875rem !important;
+}
+
+.dx-texteditor.dx-editor-filled {
+  background-color: white !important;
+  border-color: theme('colors.border') !important;
+}
+
+.dx-texteditor.dx-state-focused {
+  border-color: theme('colors.blue.500') !important;
+  box-shadow: 0 0 0 2px theme('colors.blue.500/20') !important;
+}
+
+/* Selectbox */
+.dx-selectbox .dx-texteditor-input {
+  padding: 0.5rem !important;
+}
+
+/* Toolbar */
+.dx-datagrid .dx-toolbar {
+  background-color: white !important;
+  border-color: theme('colors.border') !important;
+  padding: 1rem !important;
+}
+
+/* Search panel */
+.dx-datagrid .dx-datagrid-search-panel {
+  padding: 0.5rem !important;
+}
+
+.dx-datagrid .dx-datagrid-search-panel input {
+  border-radius: theme('borderRadius.md') !important;
+  border-color: theme('colors.border') !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* Pager */
+.dx-datagrid .dx-pager {
+  background-color: white !important;
+  border-color: theme('colors.border') !important;
+  padding: 1rem !important;
+}
+
+.dx-datagrid .dx-page {
+  border-radius: theme('borderRadius.md') !important;
+  margin: 0 0.125rem !important;
+}
+
+.dx-datagrid .dx-page.dx-selection {
+  background-color: theme('colors.primary') !important;
+  color: white !important;
+}
+
+/* Loading indicator */
+.dx-datagrid .dx-loadpanel {
+  background-color: theme('colors.background/80') !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Filter row */
+.dx-datagrid .dx-filter-row {
+  background-color: theme('colors.muted.DEFAULT/50') !important;
+}
+
+.dx-datagrid .dx-filter-row input {
+  font-size: 0.75rem !important;
+  padding: 0.25rem 0.5rem !important;
+}
+
+/* Validation errors */
+.dx-datagrid .dx-invalid {
+  border-color: theme('colors.red.500') !important;
+  background-color: theme('colors.red.50') !important;
+}
+
+/* Context menu */
+.dx-context-menu {
+  border-radius: theme('borderRadius.lg') !important;
+  box-shadow: theme('boxShadow.lg') !important;
+  border-color: theme('colors.border') !important;
+}
+
+.dx-context-menu .dx-menu-item {
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.875rem !important;
+}
+
+.dx-context-menu .dx-menu-item:hover {
+  background-color: theme('colors.muted.DEFAULT') !important;
+}
+
+/* Checkbox selection */
+.dx-datagrid .dx-select-checkbox {
+  margin: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dx-datagrid {
+    font-size: 0.75rem !important;
+  }
+  
+  .dx-datagrid .dx-toolbar {
+    padding: 0.5rem !important;
+  }
+  
+  .dx-datagrid .dx-pager {
+    padding: 0.5rem !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dx-datagrid {
+    --dx-color-background: theme('colors.background');
+    --dx-color-border: theme('colors.border');
+  }
+}
