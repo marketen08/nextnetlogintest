@@ -106,6 +106,23 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
+        {/* Tarjeta de Proveedores */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h3 className="font-semibold">KPIs</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Gestionar KPIs del sistema
+              </p>
+              <Link href="/kpis">
+                <Button className="mt-3" size="sm">
+                  Ver KPIs
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Tarjeta solo para moderadores y admins */}
         <RoleBasedRender allowedRoles={['admin', 'moderator']}>
           <Card>

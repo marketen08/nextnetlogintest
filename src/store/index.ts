@@ -17,6 +17,7 @@ import storage from 'redux-persist/lib/storage';
 import userReducer from './features/user';
 import dataReducer from './features/data';
 import { api } from './services/api';
+import { kpiApi } from './services/kpis';
 
 const persistConfig = {
     key: 'root',
@@ -28,12 +29,13 @@ const persistConfig = {
 
 const combinedReducers = combineReducers({
     [api.reducerPath]: api.reducer,
+    [kpiApi.reducerPath]: kpiApi.reducer,
     user: userReducer,
     data: dataReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, combinedReducers);
-const middlewares = [api.middleware];
+const middlewares = [api.middleware, kpiApi.middleware];
 
 export const store = configureStore({
     reducer: persistedReducer,
