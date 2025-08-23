@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, BarChart3, TrendingUp, Users, Target } from 'lucide-react';
+import { Plus, BarChart3, TrendingUp, Users, Target, List } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -32,9 +32,16 @@ function KpisPage() {
           </p>
         </div>
         <div className="flex gap-2">
-            <Button onClick={() => router.push('/dashboard')} variant="outline">
-                Ir al Dashboard
-            </Button>
+          <Button onClick={() => router.push('/dashboard')} variant="outline">
+            Ir al Dashboard
+          </Button>
+          <Button 
+            variant="outline"
+            onClick={() => router.push('/metricas')}
+          >
+            <List className="mr-2 h-4 w-4" />
+            Ver Registros
+          </Button>
           <Button onClick={() => setShowForm(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Registrar Métricas

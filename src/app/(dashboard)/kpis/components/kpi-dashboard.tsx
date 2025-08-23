@@ -95,7 +95,7 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
       storyPoints: Math.round(data.storyPoints / data.count),
       commits: Math.round(data.commits / data.count),
       coverage: Math.round(data.coverage / data.count),
-    })).sort((a, b) => a.fecha.localeCompare(b.fecha));
+    })).slice().sort((a, b) => a.fecha.localeCompare(b.fecha));
   }, [kpiMetrics, refreshTrigger]);
 
   const developerData = useMemo(() => {
@@ -140,7 +140,7 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
       bugs: Math.round(dev.bugs / dev.count),
       coverage: Math.round(dev.coverage / dev.count),
       satisfaction: Number((dev.satisfaction / dev.count).toFixed(1)),
-    })).sort((a, b) => b.storyPoints - a.storyPoints);
+    })).slice().sort((a, b) => b.storyPoints - a.storyPoints);
   }, [kpiMetrics, refreshTrigger]);
 
   // Datos mock para demostración - en producción vendrían de API
@@ -419,7 +419,7 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {developerData
+                {[...developerData]
                   .sort((a, b) => b.storyPoints - a.storyPoints)
                   .map((dev, index) => (
                     <TableRow key={dev.name}>
