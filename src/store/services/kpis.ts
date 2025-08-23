@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { KpiMetric, KpiSummary, DeveloperKpi, ProjectKpi } from '../types/kpi';
 
-// Usamos el mismo backend de .NET que ya tienes configurado
-const API_BASE_URL = 'http://localhost:3000/api';
+// Usamos las API routes de Next.js que ya implementamos
+const API_BASE_URL = '/api';
 
 export const kpiApi = createApi({
   reducerPath: 'kpiApi',

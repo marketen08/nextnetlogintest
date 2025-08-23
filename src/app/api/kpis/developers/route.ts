@@ -1,40 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DeveloperKpi } from '@/store/types/kpi';
 
-// Mock data para desarrolladores - en producción calcularías esto desde la DB
+// Datos de desarrolladores basados en los datos de ejemplo de las métricas
 const mockDeveloperKpis: DeveloperKpi[] = [
   {
     desarrollador: "Juan Pérez",
-    totalStoryPoints: 125,
-    avgCommitsPerDay: 3.2,
+    totalStoryPoints: 13,
+    avgCommitsPerDay: 25,
     bugsCreados: 2,
-    bugsResueltos: 8,
-    avgCodeCoverage: 94.2,
-    avgCycleTime: 3.1,
-    deploymentsExitosos: 15,
-    satisfaccionPromedio: 4.5
+    bugsResueltos: 5,
+    avgCodeCoverage: 85,
+    avgCycleTime: 3,
+    deploymentsExitosos: 2,
+    satisfaccionPromedio: 4.0
   },
   {
     desarrollador: "María García", 
-    totalStoryPoints: 138,
-    avgCommitsPerDay: 4.1,
+    totalStoryPoints: 8,
+    avgCommitsPerDay: 18,
     bugsCreados: 1,
-    bugsResueltos: 12,
-    avgCodeCoverage: 96.8,
-    avgCycleTime: 2.8,
-    deploymentsExitosos: 18,
-    satisfaccionPromedio: 4.7
+    bugsResueltos: 3,
+    avgCodeCoverage: 92,
+    avgCycleTime: 2,
+    deploymentsExitosos: 3,
+    satisfaccionPromedio: 4.5
   },
   {
     desarrollador: "Carlos Rodriguez",
-    totalStoryPoints: 119,
-    avgCommitsPerDay: 2.9,
+    totalStoryPoints: 21,
+    avgCommitsPerDay: 32,
     bugsCreados: 3,
-    bugsResueltos: 7,
-    avgCodeCoverage: 89.3,
-    avgCycleTime: 4.2,
-    deploymentsExitosos: 13,
-    satisfaccionPromedio: 4.2
+    bugsResueltos: 2,
+    avgCodeCoverage: 78,
+    avgCycleTime: 4,
+    deploymentsExitosos: 1,
+    satisfaccionPromedio: 3.5
   }
 ];
 

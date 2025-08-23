@@ -129,8 +129,8 @@ export function KpiForm({ open, onOpenChange, onSuccess }: KpiFormProps) {
     setIsSubmitting(true);
     try {
       // Convertir los datos del formulario al formato de la API
-      const kpiMetric: KpiMetric = {
-        id: Date.now(),
+      // No incluimos id, createdAt, updatedAt porque los genera el servidor
+      const kpiMetricData = {
         fecha: format(data.fecha, 'yyyy-MM-dd'),
         desarrollador: data.desarrollador,
         proyecto: data.proyecto,
@@ -164,12 +164,10 @@ export function KpiForm({ open, onOpenChange, onSuccess }: KpiFormProps) {
         
         // Metadata
         comentarios: data.comentarios,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
 
       // Llamar a la API para guardar los datos
-      await addKpiMetric(kpiMetric).unwrap();
+      await addKpiMetric(kpiMetricData).unwrap();
       
       toast.success("Métricas registradas correctamente");
       onSuccess?.();

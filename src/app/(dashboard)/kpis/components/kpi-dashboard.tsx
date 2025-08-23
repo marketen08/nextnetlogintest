@@ -50,8 +50,12 @@ interface KpiDashboardProps {
 
 export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
   // Fetch real KPI data from API
-  const { data: kpiMetrics = [], isLoading: isLoadingMetrics } = useGetKpiMetricsQuery();
-  const { data: summary, isLoading: isLoadingSummary } = useGetKpiSummaryQuery();
+  const { data: kpiResponse, isLoading: isLoadingMetrics } = useGetKpiMetricsQuery({});
+  const { data: summaryResponse, isLoading: isLoadingSummary } = useGetKpiSummaryQuery({});
+  
+  // Extract data from API response
+  const kpiMetrics = kpiResponse?.data || [];
+  const summary = summaryResponse?.data;
 
   // Process data for charts
   const productivityData = useMemo(() => {
@@ -69,7 +73,7 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
 
     // Group by month and calculate averages
     const monthlyData = kpiMetrics.reduce((acc, metric) => {
-      const month = metric.date.substring(0, 7); // YYYY-MM
+      const month = metric.fecha.substring(0, 7); // YYYY-MM
       if (!acc[month]) {
         acc[month] = {
           fecha: month,
@@ -79,9 +83,9 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
           count: 0
         };
       }
-      acc[month].storyPoints += metric.productivity.storyPoints;
-      acc[month].commits += metric.productivity.commitsCount;
-      acc[month].coverage += metric.quality.testCoverage;
+      acc[month].storyPoints += metric.storyPoints || 0;
+      acc[month].commits += metric.commits || 0;
+      acc[month].coverage += metric.codeCoverage || 0;
       acc[month].count++;
       return acc;
     }, {} as Record<string, any>);
@@ -109,9 +113,9 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
 
     // Group by developer and calculate totals/averages
     const devData = kpiMetrics.reduce((acc, metric) => {
-      if (!acc[metric.developer]) {
-        acc[metric.developer] = {
-          name: metric.developer,
+      if (!acc[metric.desarrollador]) {
+        acc[metric.desarrollador] = {
+          name: metric.desarrollador,
           storyPoints: 0,
           bugs: 0,
           coverage: 0,
@@ -119,15 +123,14 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
           count: 0
         };
       }
-      acc[metric.developer].storyPoints += metric.productivity.storyPoints;
-      acc[metric.developer].bugs += metric.quality.bugsFound;
-      acc[metric.developer].coverage += metric.quality.testCoverage;
-      acc[metric.developer].satisfaction += (
-        metric.satisfaction.clientSatisfaction + 
-        metric.satisfaction.teamSatisfaction + 
-        metric.satisfaction.jobSatisfaction
-      ) / 3;
-      acc[metric.developer].count++;
+      acc[metric.desarrollador].storyPoints += metric.storyPoints || 0;
+      acc[metric.desarrollador].bugs += metric.bugsEncontrados || 0;
+      acc[metric.desarrollador].coverage += metric.codeCoverage || 0;
+      acc[metric.desarrollador].satisfaction += (
+        (metric.satisfaccionCliente || 0) + 
+        (metric.satisfaccionEquipo || 0)
+      ) / 2;
+      acc[metric.desarrollador].count++;
       return acc;
     }, {} as Record<string, any>);
 
@@ -227,36 +230,38 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
           title="Story Points (Mes)"
-          value={362}
+          value={kpiMetrics.reduce((total, metric) => total + (metric.storyPoints || 0), 0)}
           icon={Target}
           trend="up"
-          trendValue="+12% vs mes anterior"
+          trendValue={`${kpiMetrics.length} registros`}
           color="blue"
         />
         <MetricCard
           title="Bugs Resueltos"
-          value={89}
-          unit="/95"
+          value={kpiMetrics.reduce((total, metric) => total + (metric.bugsResueltos || 0), 0)}
+          unit={`/${kpiMetrics.reduce((total, metric) => total + (metric.bugsEncontrados || 0), 0)}`}
           icon={Award}
           trend="up"
-          trendValue="94% success rate"
+          trendValue="Resolución activa"
           color="green"
         />
         <MetricCard
-          title="Cycle Time Promedio"
-          value={3.2}
-          unit=" días"
+          title="Coverage Promedio"
+          value={kpiMetrics.length > 0 
+            ? Math.round(kpiMetrics.reduce((total, metric) => total + (metric.codeCoverage || 0), 0) / kpiMetrics.length)
+            : 0}
+          unit="%"
           icon={Clock}
-          trend="down"
-          trendValue="-0.8 días vs anterior"
+          trend="up"
+          trendValue="Meta: 85%"
           color="purple"
         />
         <MetricCard
           title="Commits Totales"
-          value={847}
+          value={kpiMetrics.reduce((total, metric) => total + (metric.commits || 0), 0)}
           icon={GitCommit}
           trend="up"
-          trendValue="+156 commits"
+          trendValue={`${developerData.length} desarrolladores`}
           color="orange"
         />
       </div>
