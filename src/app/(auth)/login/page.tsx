@@ -15,7 +15,7 @@ import { AlertError } from "@/components/alerts"
 // import { Link } from "react-router";
 
 // ** Redux imports
-import { useLoginMutation, useLoginGoogleMutation } from "@/store/services/auth";
+import { useLoginMutation, useLoginGoogleMutation, useLoginMicrosoftMutation } from "@/store/services/auth";
 import { useAppDispatch } from "@/store/hooks"
 import { tokenReceived } from "@/store/features/user"
 
@@ -28,6 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useGoogleLogin, GoogleLogin } from "@react-oauth/google";
 import Link from "next/link"
 import { useRouter } from "next/navigation";
+import { microsoftLogin } from "@/lib/msalConfig";
 
 const formSchema = z.object({
     email: z.string({ message: "El email es requerido" }).email("No es un email válido"),
@@ -40,7 +41,8 @@ const Login = () => {
     // Redux
     const [loginAPI, { isLoading: isLoadingLogin }] = useLoginMutation();
     const [loginGoogleAPI, { isLoading: isLoadingGoogle }] = useLoginGoogleMutation();
-    const isLoading = isLoadingLogin || isLoadingGoogle;
+    const [loginMicrosoftAPI, { isLoading: isLoadingMicrosoft }] = useLoginMicrosoftMutation();
+    const isLoading = isLoadingLogin || isLoadingGoogle || isLoadingMicrosoft;
     const dispatch = useAppDispatch();
 
     // Hooks
@@ -98,13 +100,29 @@ const Login = () => {
 
     const googleLoginHandler = async (props: object) => {
         try {
-            //console.log(props);
+            console.log(props, '<-- props');
             const res = await loginGoogleAPI(props).unwrap();
             //console.log({ res })
 
             dispatchToken(res);
         } catch (error) {
             console.error(error);
+        }
+    }
+
+        // ** Microsoft login handler
+    const microsoftLoginHandler = async () => {
+        try {
+            const microsoftResponse = await microsoftLogin();  // Llama a la función para login de Microsoft
+
+            if (microsoftResponse) {
+                console.log(microsoftResponse, '<-- microsoftResponse');
+                const res = await loginMicrosoftAPI(microsoftResponse).unwrap();
+                console.log({ res }, 'microsoft')
+                dispatchToken(res);
+            }
+        } catch (error) {
+            console.error("Error en el login de Microsoft:", error);
         }
     }
 
@@ -142,6 +160,17 @@ const Login = () => {
                             Continue con Google
                         </Button>
                     </div>
+
+                    {/* Microsoft login button */}
+                    <Button variant="outline" type="button" disabled={isLoading} className="w-full" onClick={microsoftLoginHandler}>
+                        {isLoading ? (
+                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <Icons.google className="mr-2 h-4 w-4" />
+                        )}{" "}
+                        Continue con Microsoft
+                    </Button>
+
                     <div className="relative">
                         <div className="absolute inset-0 flex items-center">
                             <span className="w-full border-t" />

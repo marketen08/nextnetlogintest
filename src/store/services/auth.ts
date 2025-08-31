@@ -29,6 +29,13 @@ export const authAPI = api.injectEndpoints({
                 body
             }),
         }),
+        loginMicrosoft: build.mutation({
+            query: (body) => ({
+                url: '/auth/microsoft',
+                method: 'POST',
+                body
+            }),
+        }),
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         getUsers: build.query<any[], void>({
             query: () => ({
@@ -39,4 +46,4 @@ export const authAPI = api.injectEndpoints({
     }),
 })
 
-export const { useLoginMutation, useLoginGoogleMutation, useRegisterMutation, useGetUsersQuery } = authAPI
+export const { useLoginMutation, useLoginGoogleMutation, useLoginMicrosoftMutation, useRegisterMutation, useGetUsersQuery } = authAPI
