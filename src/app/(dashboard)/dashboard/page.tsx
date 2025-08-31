@@ -5,40 +5,19 @@ import { RoleBasedRender, useHasRole } from '@/components/role-based-render';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useAppDispatch } from '@/store/hooks';
-import { logout } from '@/store/features/user';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { is } from 'date-fns/locale';
 
 function DashboardPage() {
   const { user } = useAuth();
-  const dispatch = useAppDispatch();
-  const router = useRouter();
   const isAdmin = useHasRole('Admin');
   const isMecanico = useHasRole(['Admin', 'Mecanico']);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    router.push('/login');
-  };
-
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">¡Bienvenido, {user.email}!</p>
-        </div>
-        <div className="flex gap-2">
-          <Link href="/profile">
-            <Button variant="outline">Mi Perfil</Button>
-          </Link>
-          <Button onClick={handleLogout} variant="outline">
-            Cerrar Sesión
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <p className="text-muted-foreground">¡Bienvenido, {user.email}!</p>
       </div>
 
       {/* Información del usuario */}
@@ -72,17 +51,34 @@ function DashboardPage() {
 
       {/* Acciones rápidas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Tarjeta para todos los usuarios */}
+        {/* Tarjeta para KPIs */}
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <h3 className="font-semibold">Mi Perfil</h3>
+              <h3 className="font-semibold">KPIs</h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Ver y editar información personal
+                Gestionar KPIs del sistema
               </p>
-              <Link href="/profile">
+              <Link href="/kpis">
                 <Button className="mt-3" size="sm">
-                  Ver Perfil
+                  Ver KPIs
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tarjeta de Métricas */}
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h3 className="font-semibold">Métricas</h3>
+              <p className="text-sm text-muted-foreground mt-1">
+                Administrar métricas
+              </p>
+              <Link href="/metricas">
+                <Button className="mt-3" size="sm">
+                  Ver Métricas
                 </Button>
               </Link>
             </div>
@@ -106,23 +102,6 @@ function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Tarjeta de Proveedores */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <h3 className="font-semibold">KPIs</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                Gestionar KPIs del sistema
-              </p>
-              <Link href="/kpis">
-                <Button className="mt-3" size="sm">
-                  Ver KPIs
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Tarjeta solo para moderadores y admins */}
         <RoleBasedRender allowedRoles={['admin', 'moderator']}>
           <Card>
@@ -132,9 +111,11 @@ function DashboardPage() {
                 <p className="text-sm text-muted-foreground mt-1">
                   Administrar usuarios del sistema
                 </p>
-                <Button className="mt-3" size="sm" disabled>
-                  Próximamente
-                </Button>
+                <Link href="/usuarios">
+                  <Button className="mt-3" size="sm">
+                    Gestionar Usuarios
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>

@@ -22,7 +22,7 @@ function KpisPage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
@@ -32,9 +32,6 @@ function KpisPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button onClick={() => router.push('/dashboard')} variant="outline">
-            Ir al Dashboard
-          </Button>
           <Button 
             variant="outline"
             onClick={() => router.push('/metricas')}
