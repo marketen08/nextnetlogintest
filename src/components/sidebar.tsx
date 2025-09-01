@@ -19,7 +19,8 @@ import {
   Package,
   TrendingUp,
   User,
-  Shield
+  Shield,
+  Building2
 } from 'lucide-react';
 
 const menuItems = [
@@ -39,6 +40,12 @@ const menuItems = [
     title: 'Métricas',
     href: '/metricas',
     icon: TrendingUp,
+    roles: ['all']
+  },
+  {
+    title: 'Clientes',
+    href: '/clientes',
+    icon: Building2,
     roles: ['all']
   },
   {

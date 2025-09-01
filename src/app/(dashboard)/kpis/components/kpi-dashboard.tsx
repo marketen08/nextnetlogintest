@@ -387,7 +387,7 @@ export function KpiDashboard({ refreshTrigger }: KpiDashboardProps) {
                 <RadialBar
                   label={{ position: 'insideStart', fill: '#fff' }}
                   background
-                  clockWise
+                  // clockWise
                   dataKey="value"
                 />
                 <Legend iconSize={18} wrapperStyle={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />

@@ -7,11 +7,21 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { ProfileImage } from '@/components/profile-image';
 import { 
   useGetProfileQuery, 
   useUpdateProfileMutation 
 } from '@/store/services/profile';
+import { 
+  useGetClientesPagedQuery 
+} from '@/store/services/clientes';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { 
@@ -32,12 +42,18 @@ function ProfilePage() {
   });
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation();
   
+  // Obtener lista de clientes para el select
+  const { data: clientesResponse, isLoading: isLoadingClientes } = useGetClientesPagedQuery({
+    page: 1,
+    pagesize: 100, // Obtener una lista amplia para el select
+  });
+  
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
     phoneNumber: '',
     proyectoId: '',
-    clienteId: '',
+    clienteId: null as string | null, // Permitir null para clienteId
     sociedadId: '',
     terminalId: '',
     color: '#3b82f6',
@@ -55,7 +71,7 @@ function ProfilePage() {
         apellido: user.apellido || '',
         phoneNumber: user.phoneNumber || '',
         proyectoId: user.proyectoId || '',
-        clienteId: user.clienteId || '',
+        clienteId: user.clienteId || null, // Usar null en lugar de string vacío
         sociedadId: user.sociedadId || '',
         terminalId: user.terminalId || '',
         color: user.color || '#3b82f6',
@@ -63,13 +79,19 @@ function ProfilePage() {
     }
   }, [user]);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | null) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleUpdateProfile = async () => {
     try {
-      const result = await updateProfile(formData).unwrap();
+      // Convertir null a undefined para clienteId antes de enviar
+      const dataToSend = {
+        ...formData,
+        clienteId: formData.clienteId || undefined, // Convertir null/string vacío a undefined
+      };
+      
+      const result = await updateProfile(dataToSend).unwrap();
       
       // Si llegamos aquí, la actualización fue exitosa
       toast.success('Perfil actualizado correctamente');
@@ -160,6 +182,34 @@ function ProfilePage() {
                     }
                   </h3>
                   <p className="text-sm text-muted-foreground">{user.email}</p>
+                  
+                  {/* Cliente asignado */}
+                  {formData.clienteId && formData.clienteId !== "__no_client__" && (
+                    <div className="mt-2">
+                      {(() => {
+                        const cliente = clientesResponse?.data?.find(c => c.id === formData.clienteId);
+                        return cliente ? (
+                          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                            {cliente.urlLogo && (
+                              <img 
+                                src={cliente.urlLogo} 
+                                alt={cliente.nombre}
+                                className="h-4 w-4 rounded object-cover"
+                              />
+                            )}
+                            <span>{cliente.nombre}</span>
+                            {cliente.esContratista && (
+                              <Badge variant="outline" className="text-xs">
+                                Contratista
+                              </Badge>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-muted-foreground">Cliente: {formData.clienteId}</p>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-1 justify-center">
@@ -275,13 +325,37 @@ function ProfilePage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="clienteId">Cliente ID</Label>
-                  <Input
-                    id="clienteId"
-                    value={formData.clienteId}
-                    onChange={(e) => handleInputChange('clienteId', e.target.value)}
-                    placeholder="ID del cliente"
-                  />
+                  <Label htmlFor="clienteId">Cliente</Label>
+                  <Select
+                    value={formData.clienteId || "__no_client__"} // Usar un valor especial en lugar de string vacío
+                    onValueChange={(value) => handleInputChange('clienteId', value === "__no_client__" ? null : value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={isLoadingClientes ? "Cargando clientes..." : "Seleccionar cliente"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__no_client__">Sin cliente asignado</SelectItem>
+                      {clientesResponse?.data?.map((cliente) => (
+                        <SelectItem key={cliente.id} value={cliente.id}>
+                          <div className="flex items-center gap-2">
+                            {cliente.urlLogo && (
+                              <img 
+                                src={cliente.urlLogo} 
+                                alt={cliente.nombre}
+                                className="h-4 w-4 rounded object-cover"
+                              />
+                            )}
+                            <span>{cliente.nombre}</span>
+                            {cliente.esContratista && (
+                              <Badge variant="secondary" className="ml-auto text-xs">
+                                Contratista
+                              </Badge>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
