@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/components/auth-guard';
 import { RoleBasedRender } from '@/components/role-based-render';
+import { ProfileImage } from '@/components/profile-image';
+import { useGetProfileQuery } from '@/store/services/profile';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -74,11 +76,33 @@ const menuItems = [
 export function Sidebar() {
   const { isOpen, close } = useSidebar();
   const { user } = useAuth();
+  const { data: profileUser } = useGetProfileQuery();
   const pathname = usePathname();
+
+  // Create fallback user
+  const createFallbackUser = () => ({
+    id: '',
+    userName: user?.email || '',
+    email: user?.email || '',
+    emailConfirmed: false,
+    phoneNumberConfirmed: false,
+    twoFactorEnabled: false,
+    lockoutEnabled: false,
+    accessFailedCount: 0,
+    nombre: '',
+    apellido: '',
+    roles: user?.roles || [],
+    profileImageUrl: '',
+  });
+
+  const currentUser = profileUser ? {
+    ...profileUser,
+    roles: profileUser.roles || user?.roles || []
+  } : createFallbackUser();
 
   const shouldShowItem = (item: typeof menuItems[0]) => {
     if (item.roles.includes('all')) return true;
-    return user?.roles?.some(role => item.roles.includes(role.toLowerCase()));
+    return currentUser.roles?.some(role => item.roles.includes(role.toLowerCase()));
   };
 
   return (
@@ -113,20 +137,31 @@ export function Sidebar() {
 
         {/* User info */}
         <div className="p-4 border-b">
-          <div className="flex flex-col space-y-2">
-            <p className="text-sm font-medium truncate">{user?.email}</p>
-            <div className="flex flex-wrap gap-1">
-              {user?.roles && user.roles.length > 0 ? (
-                user.roles.map((role, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
-                    {role}
+          <div className="flex items-center space-x-3">
+            <ProfileImage user={currentUser} size="lg" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium truncate">
+                {currentUser.nombre && currentUser.apellido 
+                  ? `${currentUser.nombre} ${currentUser.apellido}`
+                  : currentUser.email
+                }
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {currentUser.email}
+              </p>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {currentUser.roles && currentUser.roles.length > 0 ? (
+                  currentUser.roles.map((role, index) => (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      {role}
+                    </Badge>
+                  ))
+                ) : (
+                  <Badge variant="outline" className="text-xs">
+                    Usuario
                   </Badge>
-                ))
-              ) : (
-                <Badge variant="outline" className="text-xs">
-                  Usuario
-                </Badge>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>

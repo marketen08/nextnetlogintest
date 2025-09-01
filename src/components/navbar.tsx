@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Menu, Bell, User } from 'lucide-react';
 import { useSidebar } from '@/contexts/sidebar-context';
 import { useAuth } from '@/components/auth-guard';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ProfileImage } from '@/components/profile-image';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,11 +16,13 @@ import {
 import { useAppDispatch } from '@/store/hooks';
 import { logout } from '@/store/features/user';
 import { useRouter } from 'next/navigation';
+import { useGetProfileQuery } from '@/store/services/profile';
 import Link from 'next/link';
 
 export function Navbar() {
   const { toggle } = useSidebar();
   const { user } = useAuth();
+  const { data: profileUser } = useGetProfileQuery();
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -28,6 +30,29 @@ export function Navbar() {
     dispatch(logout());
     router.push('/login');
   };
+
+  // Create a fallback user object that matches ApplicationUser interface
+  const createFallbackUser = () => ({
+    id: '',
+    userName: user?.email || '',
+    email: user?.email || '',
+    emailConfirmed: false,
+    phoneNumberConfirmed: false,
+    twoFactorEnabled: false,
+    lockoutEnabled: false,
+    accessFailedCount: 0,
+    nombre: '',
+    apellido: '',
+    roles: user?.roles || [],
+    profileImageUrl: '',
+  });
+
+  // Use profile data if available, fallback to user from auth
+  // Merge roles from JWT if profile doesn't have them
+  const currentUser = profileUser ? {
+    ...profileUser,
+    roles: profileUser.roles || user?.roles || []
+  } : createFallbackUser();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b">
@@ -62,22 +87,24 @@ export function Navbar() {
           {/* User menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback>
-                    {user?.email?.charAt(0).toUpperCase() || 'U'}
-                  </AvatarFallback>
-                </Avatar>
+              <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+                <ProfileImage user={currentUser} size="md" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
-                    {user?.email}
+                    {currentUser.nombre && currentUser.apellido 
+                      ? `${currentUser.nombre} ${currentUser.apellido}`
+                      : currentUser.email
+                    }
                   </p>
                   <p className="text-xs leading-none text-muted-foreground">
-                    {user?.roles?.join(', ') || 'Usuario'}
+                    {currentUser.email}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {currentUser.roles?.join(', ') || 'Usuario'}
                   </p>
                 </div>
               </DropdownMenuLabel>
