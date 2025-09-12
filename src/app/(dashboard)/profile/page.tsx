@@ -53,7 +53,7 @@ function ProfilePage() {
     apellido: '',
     phoneNumber: '',
     proyectoId: '',
-    clienteId: null as string | null, // Permitir null para clienteId
+    clienteId: '',
     sociedadId: '',
     terminalId: '',
     color: '#3b82f6',
@@ -71,7 +71,7 @@ function ProfilePage() {
         apellido: user.apellido || '',
         phoneNumber: user.phoneNumber || '',
         proyectoId: user.proyectoId || '',
-        clienteId: user.clienteId || null, // Usar null en lugar de string vacío
+        clienteId: user.clienteId || '',
         sociedadId: user.sociedadId || '',
         terminalId: user.terminalId || '',
         color: user.color || '#3b82f6',
