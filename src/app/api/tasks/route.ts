@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('Datos recibidos en POST /api/tasks:', body); // Debug log
     
     // Validaciones básicas
     if (!body.fecha || !body.estado || !body.desarrollador || !body.proyecto) {
@@ -59,6 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     const newTask = addTask(body);
+    console.log('Tarea creada exitosamente:', newTask); // Debug log
     
     return NextResponse.json({
       success: true,
@@ -66,6 +68,7 @@ export async function POST(request: NextRequest) {
       message: 'Tarea creada exitosamente'
     }, { status: 201 });
   } catch (error) {
+    console.error('Error en POST /api/tasks:', error); // Debug log
     return NextResponse.json({
       success: false,
       message: 'Error al crear tarea',

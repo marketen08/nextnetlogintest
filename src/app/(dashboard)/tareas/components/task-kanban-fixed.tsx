@@ -12,10 +12,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  closestCenter,
-  rectIntersection,
-  getFirstCollision,
-  pointerWithin,
+  closestCorners,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -66,7 +63,6 @@ import {
   Briefcase,
   Archive,
   Info,
-  RotateCcw,
 } from "lucide-react";
 
 // Estados del Kanban (sin DONE_BACKUP)
@@ -76,24 +72,6 @@ const KANBAN_COLUMNS: { id: TaskStatus; title: string; color: string }[] = [
   { id: 'DOING', title: 'Doing', color: 'bg-yellow-100' },
   { id: 'DONE', title: 'Done', color: 'bg-green-100' },
 ];
-
-// Función de detección de colisiones personalizada que prioriza las columnas
-const customCollisionDetection = (args: any) => {
-  const columnIds = KANBAN_COLUMNS.map(col => col.id);
-  
-  // Primero intentar detectar colisiones con las columnas usando pointerWithin
-  const pointerCollisions = pointerWithin(args);
-  const columnCollisions = pointerCollisions.filter((collision: any) => 
-    columnIds.includes(collision.id)
-  );
-  
-  if (columnCollisions.length > 0) {
-    return columnCollisions;
-  }
-  
-  // Si no hay colisiones con columnas, usar rectIntersection como respaldo
-  return rectIntersection(args);
-};
 
 interface TaskKanbanProps {
   className?: string;
@@ -113,7 +91,6 @@ export function TaskKanban({ className }: TaskKanbanProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [developerFilter, setDeveloperFilter] = useState<string | 'all'>('all');
   const [projectFilter, setProjectFilter] = useState<string | 'all'>('all');
-  const [isRecovering, setIsRecovering] = useState(false);
 
   // Construir parámetros de query (excluyendo DONE_BACKUP)
   const queryParams: Record<string, string> = {};
@@ -173,7 +150,7 @@ export function TaskKanban({ className }: TaskKanbanProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 3, // Menor distancia para activación más sensible
+        distance: 8,
       },
     })
   );
@@ -190,22 +167,10 @@ export function TaskKanban({ className }: TaskKanbanProps) {
     const { active, over } = event;
     setActiveTask(null);
 
-    // Si no hay un destino válido, mostrar mensaje informativo
-    if (!over) {
-      toast.info('Arrastra la tarea a una de las columnas para cambiar su estado');
-      return;
-    }
+    if (!over) return;
 
     const taskId = active.id;
     const newStatus = over.id as TaskStatus;
-    
-    // Validar que el nuevo estado sea uno de los estados válidos del Kanban
-    const validStatuses = KANBAN_COLUMNS.map(col => col.id);
-    if (!validStatuses.includes(newStatus)) {
-      console.warn(`Estado inválido: ${newStatus}. Estados válidos: ${validStatuses.join(', ')}`);
-      toast.warning('Arrastra la tarea a una columna válida (Task List, To Do, Doing, o Done)');
-      return; // No proceder si el estado no es válido
-    }
     
     const task = kanbanTasks.find((t: Task) => t.id.toString() === taskId);
     if (!task || task.estado === newStatus) return;
@@ -262,34 +227,6 @@ export function TaskKanban({ className }: TaskKanbanProps) {
     setShowBackupConfirmation(true);
   };
 
-  // Función para recuperar tareas DONE_BACKUP
-  const handleRecoverBackupTasks = async () => {
-    setIsRecovering(true);
-    try {
-      const response = await fetch('/api/tasks/recover', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        toast.success(`Se recuperaron ${result.fixed} tareas desde DONE_BACKUP a TASKLIST`);
-        // Forzar refetch de las tareas para mostrar los cambios
-        refetch();
-      } else {
-        toast.error(result.message || 'Error al recuperar las tareas');
-      }
-    } catch (error) {
-      console.error('Error al recuperar tareas:', error);
-      toast.error('Error al recuperar las tareas');
-    } finally {
-      setIsRecovering(false);
-    }
-  };
-
   const confirmMoveAllToBackup = async () => {
     const doneTasks = tasksByStatus['DONE'] || [];
     const success = await moveAllToBackup(doneTasks);
@@ -328,25 +265,14 @@ export function TaskKanban({ className }: TaskKanbanProps) {
                 Arrastra las tareas entre columnas para cambiar su estado
               </CardDescription>
             </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={handleRecoverBackupTasks} 
-                variant="outline" 
-                className="gap-2"
-                disabled={isRecovering}
-              >
-                <RotateCcw className="h-4 w-4" />
-                {isRecovering ? 'Recuperando...' : 'Recuperar Backup'}
-              </Button>
-              <Button onClick={() => setIsFormOpen(true)} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Nueva Tarea
-              </Button>
-            </div>
+            <Button onClick={() => setIsFormOpen(true)} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Nueva Tarea
+            </Button>
           </div>
 
           {/* Información de tareas en backup */}
-          {false && (
+          {backupTasks.length > 0 && (
             <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <div className="flex items-center gap-2 text-orange-700">
                 <Info className="h-4 w-4" />
@@ -437,7 +363,7 @@ export function TaskKanban({ className }: TaskKanbanProps) {
           ) : (
             <DndContext
               sensors={sensors}
-              collisionDetection={customCollisionDetection}
+              collisionDetection={closestCorners}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >

@@ -6,6 +6,7 @@ import { useState, useRef } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task } from "@/store/types/task";
+import { ChecklistProgress } from "./checklist-manager";
 import {
   Card,
   CardContent,
@@ -214,6 +215,11 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
               </Badge>
             ))}
           </div>
+        )}
+
+        {/* Progreso del Checklist */}
+        {task.checklist && task.checklist.length > 0 && (
+          <ChecklistProgress checklist={task.checklist} />
         )}
 
         {/* Fecha */}

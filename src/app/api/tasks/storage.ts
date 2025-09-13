@@ -1,4 +1,4 @@
-import { Task, TaskStatus, TaskTag } from '@/store/types/task';
+import { Task, TaskStatus, TaskTag, ChecklistItem } from '@/store/types/task';
 
 // Mock data para desarrollo
 let tasks: Task[] = [
@@ -18,6 +18,36 @@ let tasks: Task[] = [
       { id: 'frontend', name: 'Frontend', color: '#3B82F6' },
       { id: 'critical', name: 'Crítico', color: '#EF4444' }
     ],
+    checklist: [
+      {
+        id: 'check-1-1',
+        text: 'Diseñar wireframes del carrito',
+        completed: true,
+        createdAt: new Date('2024-12-01T09:00:00').toISOString(),
+        completedAt: new Date('2024-12-01T11:30:00').toISOString()
+      },
+      {
+        id: 'check-1-2',
+        text: 'Implementar funcionalidad de agregar productos',
+        completed: true,
+        createdAt: new Date('2024-12-01T09:00:00').toISOString(),
+        completedAt: new Date('2024-12-02T10:15:00').toISOString()
+      },
+      {
+        id: 'check-1-3',
+        text: 'Pruebas unitarias',
+        completed: true,
+        createdAt: new Date('2024-12-01T09:00:00').toISOString(),
+        completedAt: new Date('2024-12-03T14:20:00').toISOString()
+      },
+      {
+        id: 'check-1-4',
+        text: 'Integración con pasarela de pago',
+        completed: true,
+        createdAt: new Date('2024-12-01T09:00:00').toISOString(),
+        completedAt: new Date('2024-12-03T16:45:00').toISOString()
+      }
+    ],
     createdAt: new Date('2024-12-01').toISOString(),
     updatedAt: new Date('2024-12-03').toISOString(),
     fechaCompletado: '2024-12-03',
@@ -35,6 +65,34 @@ let tasks: Task[] = [
     tags: [
       { id: 'backend', name: 'Backend', color: '#10B981' },
       { id: 'integration', name: 'Integración', color: '#8B5CF6' }
+    ],
+    checklist: [
+      {
+        id: 'check-2-1',
+        text: 'Configurar conexión con API de Salesforce',
+        completed: true,
+        createdAt: new Date('2024-12-02T08:00:00').toISOString(),
+        completedAt: new Date('2024-12-02T12:30:00').toISOString()
+      },
+      {
+        id: 'check-2-2',
+        text: 'Mapear campos entre sistemas',
+        completed: true,
+        createdAt: new Date('2024-12-02T08:00:00').toISOString(),
+        completedAt: new Date('2024-12-03T10:00:00').toISOString()
+      },
+      {
+        id: 'check-2-3',
+        text: 'Implementar sincronización bidireccional',
+        completed: false,
+        createdAt: new Date('2024-12-02T08:00:00').toISOString()
+      },
+      {
+        id: 'check-2-4',
+        text: 'Pruebas de integración',
+        completed: false,
+        createdAt: new Date('2024-12-02T08:00:00').toISOString()
+      }
     ],
     createdAt: new Date('2024-12-02').toISOString(),
     updatedAt: new Date('2024-12-02').toISOString(),
@@ -89,6 +147,32 @@ let tasks: Task[] = [
     tags: [
       { id: 'mobile', name: 'Mobile', color: '#8B5CF6' },
       { id: 'research', name: 'Investigación', color: '#F97316' }
+    ],
+    checklist: [
+      {
+        id: 'check-5-1',
+        text: 'Investigar bibliotecas de navegación',
+        completed: false,
+        createdAt: new Date('2024-12-05T09:00:00').toISOString()
+      },
+      {
+        id: 'check-5-2',
+        text: 'Evaluar React Navigation vs Expo Router',
+        completed: false,
+        createdAt: new Date('2024-12-05T09:00:00').toISOString()
+      },
+      {
+        id: 'check-5-3',
+        text: 'Configurar estructura base del proyecto',
+        completed: false,
+        createdAt: new Date('2024-12-05T09:00:00').toISOString()
+      },
+      {
+        id: 'check-5-4',
+        text: 'Definir arquitectura de estado global',
+        completed: false,
+        createdAt: new Date('2024-12-05T09:00:00').toISOString()
+      }
     ],
     createdAt: new Date('2024-12-05').toISOString(),
     updatedAt: new Date('2024-12-05').toISOString(),
@@ -201,6 +285,27 @@ export function cleanInvalidTasks(): { fixed: number; tasks: Task[] } {
   tasks = tasks.map(task => {
     // Verificar si el estado es válido
     if (!validStates.includes(task.estado as TaskStatus) || task.estado === undefined) {
+      fixedCount++;
+      return {
+        ...task,
+        estado: 'TASKLIST' as TaskStatus,
+        updatedAt: new Date().toISOString(),
+      };
+    }
+    return task;
+  });
+
+  return { fixed: fixedCount, tasks: [...tasks] };
+}
+
+export function recoverDoneBackupTasks(): { fixed: number; tasks: Task[] } {
+  const validStates: TaskStatus[] = ['TASKLIST', 'TODO', 'DOING', 'DONE'];
+  let fixedCount = 0;
+
+  tasks = tasks.map(task => {
+    // Verificar si el estado es válido
+    console.log('Revisando tarea ID:', task.id, 'Estado:', task.estado);
+    if (!validStates.includes(task.estado as TaskStatus) || task.estado === undefined || task.estado === 'DONE_BACKUP') {
       fixedCount++;
       return {
         ...task,

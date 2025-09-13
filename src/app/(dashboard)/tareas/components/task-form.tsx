@@ -7,8 +7,9 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import * as z from "zod";
 import { useAddTaskMutation, useUpdateTaskMutation } from "@/store/services/tasks";
-import { Task, TaskStatus, TaskTag } from "@/store/types/task";
+import { Task, TaskStatus, TaskTag, ChecklistItem } from "@/store/types/task";
 import { TagManager } from "./tag-manager";
+import { ChecklistManager } from "./checklist-manager";
 import {
   Dialog,
   DialogContent,
@@ -61,6 +62,13 @@ const formSchema = z.object({
     name: z.string(),
     color: z.string()
   })).optional(),
+  checklist: z.array(z.object({
+    id: z.string(),
+    text: z.string(),
+    completed: z.boolean(),
+    createdAt: z.string(),
+    completedAt: z.string().optional()
+  })).optional(),
   
   // Campos para tareas completadas
   horasTrabajadas: z.number().min(0).optional(),
@@ -112,6 +120,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
       satisfaccionEquipo: undefined,
       comentarios: '',
       tags: [],
+      checklist: [],
     },
   });
 
@@ -133,6 +142,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
         satisfaccionEquipo: task.satisfaccionEquipo,
         comentarios: task.comentarios || '',
         tags: task.tags || [],
+        checklist: task.checklist || [],
       });
     } else {
       form.reset({
@@ -147,6 +157,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
         satisfaccionEquipo: undefined,
         comentarios: '',
         tags: [],
+        checklist: [],
       });
     }
   }, [task, form]);
@@ -170,6 +181,8 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
 
   const onSubmit = async (data: FormData) => {
     try {
+      console.log('Datos del formulario antes de enviar:', data); // Debug log
+      
       const formattedData = {
         ...data,
         fecha: format(data.fecha, 'yyyy-MM-dd'),
@@ -179,6 +192,8 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
         horasTrabajadas: isCompleted ? data.horasTrabajadas : undefined,
         satisfaccionEquipo: isCompleted ? data.satisfaccionEquipo : undefined,
       };
+
+      console.log('Datos formateados para enviar:', formattedData); // Debug log
 
       if (isEditing) {
         await updateTask({ 
@@ -195,7 +210,15 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
       onSuccess?.();
     } catch (error: any) {
       console.error('Error al guardar tarea:', error);
-      toast.error(error?.data?.message || 'Error al guardar la tarea');
+      console.error('Detalles del error:', error.data || error.message || error);
+      
+      if (error.data?.message) {
+        toast.error(error.data.message);
+      } else if (error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error('Error al guardar la tarea');
+      }
     }
   };
 
@@ -442,6 +465,21 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
                     onCreateTag={handleCreateTag}
                     onUpdateTag={handleUpdateTag}
                     onDeleteTag={handleDeleteTag}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Checklist */}
+            <FormField
+              control={form.control}
+              name="checklist"
+              render={({ field }) => (
+                <FormItem>
+                  <ChecklistManager
+                    checklist={field.value || []}
+                    onChecklistChange={field.onChange}
                   />
                   <FormMessage />
                 </FormItem>

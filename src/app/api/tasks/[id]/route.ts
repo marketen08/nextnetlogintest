@@ -45,6 +45,8 @@ export async function PUT(
   try {
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id);
+    console.log('PUT request para tarea ID:', id); // Debug log
+    
     if (isNaN(id)) {
       return NextResponse.json({
         success: false,
@@ -53,7 +55,10 @@ export async function PUT(
     }
 
     const body = await request.json();
+    console.log('Datos recibidos en PUT /api/tasks/[id]:', body); // Debug log
+    
     const updatedTask = updateTask(id, body);
+    console.log('Tarea actualizada:', updatedTask); // Debug log
     
     if (!updatedTask) {
       return NextResponse.json({
@@ -68,6 +73,7 @@ export async function PUT(
       message: 'Tarea actualizada exitosamente'
     });
   } catch (error) {
+    console.error('Error en PUT /api/tasks/[id]:', error); // Debug log
     return NextResponse.json({
       success: false,
       message: 'Error al actualizar tarea',

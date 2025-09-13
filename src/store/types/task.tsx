@@ -6,6 +6,14 @@ export interface TaskTag {
   color: string; // Color en formato hex (#FF5733) o predefinido
 }
 
+export interface ChecklistItem {
+  id: string;
+  text: string;
+  completed: boolean;
+  createdAt: string;
+  completedAt?: string;
+}
+
 export interface Task {
   id: number;
   fecha: string; // Fecha de creación/asignación
@@ -16,6 +24,7 @@ export interface Task {
   storyPoints?: number;
   horasEstimadas?: number;
   tags?: TaskTag[]; // Etiquetas asignadas a la tarea
+  checklist?: ChecklistItem[]; // Lista de verificación opcional
   
   // Datos completados al finalizar la tarea
   horasTrabajadas?: number;
@@ -69,6 +78,7 @@ export interface CreateTaskRequest {
   storyPoints?: number;
   horasEstimadas?: number;
   tags?: TaskTag[];
+  checklist?: ChecklistItem[];
 }
 
 export interface UpdateTaskRequest {
@@ -83,6 +93,7 @@ export interface UpdateTaskRequest {
   satisfaccionEquipo?: number;
   comentarios?: string;
   tags?: TaskTag[];
+  checklist?: ChecklistItem[];
 }
 
 // Para completar una tarea
