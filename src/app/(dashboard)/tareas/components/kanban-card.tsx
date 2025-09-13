@@ -2,6 +2,7 @@
 
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import { useState, useRef } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task } from "@/store/types/task";
@@ -41,6 +42,9 @@ interface KanbanCardProps {
 }
 
 export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: KanbanCardProps) {
+  const [isDragStarted, setIsDragStarted] = useState(false);
+  const mouseDownPos = useRef<{ x: number; y: number } | null>(null);
+  
   const {
     attributes,
     listeners,
@@ -60,13 +64,70 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
 
   const isCompleted = ['DONE', 'DONE_BACKUP'].includes(task.estado);
 
+  // Manejar mouse down para detectar inicio de posible drag
+  const handleMouseDown = (e: React.MouseEvent) => {
+    mouseDownPos.current = { x: e.clientX, y: e.clientY };
+    setIsDragStarted(false);
+    
+    // Llamar al listener original de dnd-kit
+    if (listeners?.onMouseDown) {
+      listeners.onMouseDown(e as any);
+    }
+  };
+
+  // Manejar mouse move para detectar si es un drag
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (mouseDownPos.current) {
+      const distance = Math.sqrt(
+        Math.pow(e.clientX - mouseDownPos.current.x, 2) +
+        Math.pow(e.clientY - mouseDownPos.current.y, 2)
+      );
+      
+      // Si se mueve más de 5px, considerarlo un drag
+      if (distance > 5) {
+        setIsDragStarted(true);
+      }
+    }
+    
+    // Llamar al listener original de dnd-kit
+    if (listeners?.onMouseMove) {
+      listeners.onMouseMove(e as any);
+    }
+  };
+
+  // Manejar mouse up para detectir click vs drag
+  const handleMouseUp = (e: React.MouseEvent) => {
+    if (mouseDownPos.current && !isDragStarted) {
+      // Es un click, no un drag
+      onEdit(task);
+    }
+    
+    mouseDownPos.current = null;
+    setIsDragStarted(false);
+    
+    // Llamar al listener original de dnd-kit
+    if (listeners?.onMouseUp) {
+      listeners.onMouseUp(e as any);
+    }
+  };
+
+  // Combinar los listeners
+  const combinedListeners = {
+    ...listeners,
+    onMouseDown: handleMouseDown,
+    onMouseMove: handleMouseMove,
+    onMouseUp: handleMouseUp,
+  };
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
+      title="Clic para editar • Arrastra para mover"
       className={cn(
-        "cursor-grab active:cursor-grabbing hover:shadow-lg transition-all duration-200 border-l-4",
-        (isSortableDragging || isDragging) && "shadow-xl rotate-2 z-50",
+        "cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4",
+        (isSortableDragging || isDragging) && "shadow-xl rotate-2 z-50 cursor-grabbing",
+        !isSortableDragging && !isDragging && "hover:scale-[1.02]",
         isCompleted && "border-l-green-400 bg-green-50/50",
         task.estado === 'TASKLIST' && "border-l-gray-400",
         task.estado === 'TODO' && "border-l-blue-400",
@@ -74,14 +135,17 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
         task.estado === 'DONE' && "border-l-green-400"
       )}
       {...attributes}
-      {...listeners}
+      {...combinedListeners}
     >
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <CardTitle className="text-sm font-medium line-clamp-2">
-              {task.proyecto}
-            </CardTitle>
+            <div className="flex items-center gap-1">
+              <CardTitle className="text-sm font-medium line-clamp-2 flex-1">
+                {task.proyecto}
+              </CardTitle>
+              <Edit className="h-3 w-3 text-gray-400 opacity-60 hover:opacity-100 transition-opacity" />
+            </div>
             {task.sprint && (
               <CardDescription className="text-xs">
                 {task.sprint}
@@ -93,7 +157,14 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
               <Button 
                 variant="ghost" 
                 className="h-6 w-6 p-0 hover:bg-gray-100"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
               >
                 <span className="sr-only">Abrir menú</span>
                 <MoreHorizontal className="h-3 w-3" />
@@ -168,9 +239,18 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
           </div>
         )}
 
-        {/* Comentarios (solo si existen y la tarjeta está completada) */}
-        {isCompleted && task.comentarios && (
-          <div className="text-xs text-gray-600 bg-gray-50 p-2 rounded border-l-2 border-green-300">
+        {/* Comentarios (disponibles para todos los estados) */}
+        {task.comentarios && (
+          <div className={cn(
+            "text-xs p-2 rounded border-l-2 relative",
+            isCompleted 
+              ? "text-gray-600 bg-gray-50 border-green-300" 
+              : task.estado === 'DOING'
+              ? "text-blue-700 bg-yellow-50 border-yellow-400"
+              : task.estado === 'TODO'
+              ? "text-blue-700 bg-blue-50 border-blue-400"
+              : "text-gray-600 bg-gray-50 border-gray-400"
+          )}>
             <p className="line-clamp-2">{task.comentarios}</p>
           </div>
         )}

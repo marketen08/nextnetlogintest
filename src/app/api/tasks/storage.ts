@@ -27,6 +27,7 @@ let tasks: Task[] = [
     sprint: 'Sprint 15',
     storyPoints: 5,
     horasEstimadas: 12,
+    comentarios: 'Trabajando en la integración con el sistema de notificaciones. Progreso al 70%.',
     createdAt: new Date('2024-12-02').toISOString(),
     updatedAt: new Date('2024-12-02').toISOString(),
   },
@@ -39,6 +40,7 @@ let tasks: Task[] = [
     sprint: 'Sprint 8',
     storyPoints: 13,
     horasEstimadas: 24,
+    comentarios: 'Pendiente: Definir especificaciones de autenticación y rate limiting.',
     createdAt: new Date('2024-12-03').toISOString(),
     updatedAt: new Date('2024-12-03').toISOString(),
   },
@@ -67,6 +69,7 @@ let tasks: Task[] = [
     sprint: 'Sprint 20',
     storyPoints: 21,
     horasEstimadas: 40,
+    comentarios: 'Requiere análisis de arquitectura React Native. Evaluar dependencias.',
     createdAt: new Date('2024-12-05').toISOString(),
     updatedAt: new Date('2024-12-05').toISOString(),
   }

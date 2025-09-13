@@ -18,6 +18,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -132,10 +133,11 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
       const formattedData = {
         ...data,
         fecha: format(data.fecha, 'yyyy-MM-dd'),
+        // Comentarios siempre disponibles
+        comentarios: data.comentarios || undefined,
         // Solo incluir campos de finalización si el estado es DONE o DONE_BACKUP
         horasTrabajadas: isCompleted ? data.horasTrabajadas : undefined,
         satisfaccionEquipo: isCompleted ? data.satisfaccionEquipo : undefined,
-        comentarios: isCompleted ? data.comentarios : undefined,
       };
 
       if (isEditing) {
@@ -384,27 +386,31 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
                     )}
                   />
                 </div>
-
-                {/* Comentarios */}
-                <FormField
-                  control={form.control}
-                  name="comentarios"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Comentarios</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Comentarios sobre la tarea completada..."
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </>
             )}
+
+            {/* Comentarios - Disponible para todos los estados */}
+            <FormField
+              control={form.control}
+              name="comentarios"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Comentarios</FormLabel>
+                  <FormControl>
+                    <Textarea 
+                      placeholder="Comentarios adicionales sobre la tarea..."
+                      className="resize-none"
+                      rows={3}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Agrega contexto, notas o detalles importantes sobre esta tarea
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="flex justify-end gap-2 pt-4">
               <Button
