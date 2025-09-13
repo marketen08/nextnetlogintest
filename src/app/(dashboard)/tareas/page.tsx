@@ -20,11 +20,11 @@ export default function TareasPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       {/* Header simplificado */}
-      <div className="flex flex-col gap-3 pb-4">
+      <div className="flex flex-col gap-2 pb-2 flex-shrink-0">
         {/* Navegación por pestañas */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
           <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -40,15 +40,15 @@ export default function TareasPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="flex-1 mt-4">
+          <TabsContent value="dashboard" className="flex-1 mt-2 overflow-hidden">
             <TaskDashboard />
           </TabsContent>
 
-          <TabsContent value="kanban" className="flex-1 mt-4 h-full">
+          <TabsContent value="kanban" className="flex-1 mt-2 overflow-hidden">
             <TaskKanban />
           </TabsContent>
 
-          <TabsContent value="lista" className="flex-1 mt-4">
+          <TabsContent value="lista" className="flex-1 mt-2 overflow-hidden">
             <TaskList />
           </TabsContent>
         </Tabs>

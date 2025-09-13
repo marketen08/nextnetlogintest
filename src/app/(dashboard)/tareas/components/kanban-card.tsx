@@ -138,11 +138,11 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
       {...attributes}
       {...combinedListeners}
     >
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-1 pt-3 px-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1">
-              <CardTitle className="text-sm font-medium line-clamp-2 flex-1">
+              <CardTitle className="text-xs font-medium line-clamp-2 flex-1">
                 {task.proyecto}
               </CardTitle>
               <Edit className="h-3 w-3 text-gray-400 opacity-60 hover:opacity-100 transition-opacity" />
@@ -157,7 +157,7 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="ghost" 
-                className="h-6 w-6 p-0 hover:bg-gray-100"
+                className="h-5 w-5 p-0 hover:bg-gray-100"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -189,7 +189,7 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
         </div>
       </CardHeader>
       
-      <CardContent className="pt-0 space-y-3">
+      <CardContent className="pt-0 px-3 pb-2 space-y-2">
         {/* Desarrollador */}
         <div className="flex items-center gap-2 text-xs text-gray-600">
           <User className="h-3 w-3" />
@@ -203,7 +203,7 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
               <Badge
                 key={tag.id}
                 variant="secondary"
-                className="text-xs px-2 py-0.5 h-5"
+                className="text-xs px-1.5 py-0.5 h-4"
                 style={{
                   backgroundColor: tag.color + '20',
                   color: tag.color,

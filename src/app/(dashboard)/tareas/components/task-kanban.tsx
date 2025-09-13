@@ -310,23 +310,82 @@ export function TaskKanban({ className }: TaskKanbanProps) {
 
   return (
     <div className={`${className} h-full flex flex-col`}>
-      {/* Header compacto */}
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex gap-2">
-          <Button 
-            onClick={handleRecoverBackupTasks} 
-            variant="outline" 
-            className="gap-2"
-            disabled={isRecovering}
-          >
-            <RotateCcw className="h-4 w-4" />
-            {isRecovering ? 'Recuperando...' : 'Recuperar Backup'}
-          </Button>
-          <Button onClick={() => setIsFormOpen(true)} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Nueva Tarea
-          </Button>
+      {/* Header y filtros en una línea */}
+      <div className="flex items-center gap-2 mb-2 flex-wrap">
+        {/* Botones de acción */}
+        <Button 
+          onClick={handleRecoverBackupTasks} 
+          variant="outline" 
+          className="gap-2 h-9"
+          disabled={isRecovering}
+          size="sm"
+        >
+          <RotateCcw className="h-4 w-4" />
+          {isRecovering ? 'Recuperando...' : 'Recuperar Backup'}
+        </Button>
+        <Button onClick={() => setIsFormOpen(true)} className="gap-2 h-9" size="sm">
+          <Plus className="h-4 w-4" />
+          Nueva Tarea
+        </Button>
+
+        {/* Filtros */}
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            placeholder="Buscar tareas..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 h-9"
+          />
         </div>
+
+        <Select value={developerFilter} onValueChange={(value: string) => setDeveloperFilter(value)}>
+          <SelectTrigger className="h-9 min-w-[140px]">
+            <SelectValue placeholder="Desarrollador" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Todos
+              </div>
+            </SelectItem>
+            {uniqueDevelopers.map((developer: string) => (
+              <SelectItem key={developer} value={developer}>
+                {developer}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        
+        <Select value={projectFilter} onValueChange={(value: string) => setProjectFilter(value)}>
+          <SelectTrigger className="h-9 min-w-[120px]">
+            <SelectValue placeholder="Proyecto" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">
+              <div className="flex items-center gap-2">
+                <Briefcase className="h-4 w-4" />
+                Todos
+              </div>
+            </SelectItem>
+            {uniqueProjects.map((project: string) => (
+              <SelectItem key={project} value={project}>
+                {project}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Button 
+          variant="outline" 
+          onClick={clearFilters}
+          className="gap-2 h-9"
+          size="sm"
+        >
+          <Filter className="h-4 w-4" />
+          Limpiar
+        </Button>
       </div>
 
       {/* Información de tareas en backup */}
@@ -342,80 +401,18 @@ export function TaskKanban({ className }: TaskKanbanProps) {
         </div>
       )}
 
-      {/* Filtros compactos */}
-      <div className="flex flex-col gap-2 mb-4">
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Buscar tareas..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-9"
-            />
-          </div>
-          <Button 
-            variant="outline" 
-            onClick={clearFilters}
-            className="gap-2 h-9"
-            size="sm"
-          >
-            <Filter className="h-4 w-4" />
-            Limpiar
-          </Button>
-        </div>
-        
-        <div className="flex gap-2">
-          <Select value={developerFilter} onValueChange={(value: string) => setDeveloperFilter(value)}>
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder="Desarrollador" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Todos
-                </div>
-              </SelectItem>
-              {uniqueDevelopers.map((developer: string) => (
-                <SelectItem key={developer} value={developer}>
-                  {developer}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <Select value={projectFilter} onValueChange={(value: string) => setProjectFilter(value)}>
-            <SelectTrigger className="h-9">
-              <SelectValue placeholder="Proyecto" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="h-4 w-4" />
-                  Todos
-                </div>
-              </SelectItem>
-              {uniqueProjects.map((project: string) => (
-                <SelectItem key={project} value={project}>
-                  {project}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
       {/* Tablero Kanban */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1" style={{ height: 'calc(100vh - 200px)' }}>
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-full">
             {KANBAN_COLUMNS.map((column) => (
-              <div key={column.id} className="bg-gray-50 rounded-lg p-4">
+              <div key={column.id} className="bg-gray-50 rounded-lg p-4 h-full flex flex-col">
                 <div className="h-6 bg-gray-200 rounded mb-4 animate-pulse"></div>
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-24 bg-white rounded border mb-3 animate-pulse"></div>
-                ))}
+                <div className="flex-1 space-y-3 overflow-y-auto">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-24 bg-white rounded border animate-pulse"></div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -426,7 +423,7 @@ export function TaskKanban({ className }: TaskKanbanProps) {
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[600px]">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 h-full">
                 {KANBAN_COLUMNS.map((column) => (
                   <KanbanColumn
                     key={column.id}
