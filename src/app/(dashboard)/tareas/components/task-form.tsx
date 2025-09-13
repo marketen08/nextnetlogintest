@@ -7,7 +7,8 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import * as z from "zod";
 import { useAddTaskMutation, useUpdateTaskMutation } from "@/store/services/tasks";
-import { Task, TaskStatus } from "@/store/types/task";
+import { Task, TaskStatus, TaskTag } from "@/store/types/task";
+import { TagManager } from "./tag-manager";
 import {
   Dialog,
   DialogContent,
@@ -55,6 +56,11 @@ const formSchema = z.object({
   sprint: z.string().optional(),
   storyPoints: z.number().min(0).optional(),
   horasEstimadas: z.number().min(0).optional(),
+  tags: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    color: z.string()
+  })).optional(),
   
   // Campos para tareas completadas
   horasTrabajadas: z.number().min(0).optional(),
@@ -75,6 +81,20 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
   const [addTask, { isLoading: isAdding }] = useAddTaskMutation();
   const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
   
+  // Estado para etiquetas disponibles (en una implementación real vendría de una API)
+  const [availableTags, setAvailableTags] = useState<TaskTag[]>([
+    { id: 'frontend', name: 'Frontend', color: '#3B82F6' },
+    { id: 'backend', name: 'Backend', color: '#10B981' },
+    { id: 'critical', name: 'Crítico', color: '#EF4444' },
+    { id: 'integration', name: 'Integración', color: '#8B5CF6' },
+    { id: 'security', name: 'Seguridad', color: '#F59E0B' },
+    { id: 'architecture', name: 'Arquitectura', color: '#6366F1' },
+    { id: 'performance', name: 'Performance', color: '#EC4899' },
+    { id: 'database', name: 'Base de Datos', color: '#14B8A6' },
+    { id: 'mobile', name: 'Mobile', color: '#8B5CF6' },
+    { id: 'research', name: 'Investigación', color: '#F97316' },
+  ]);
+  
   const isLoading = isAdding || isUpdating;
   const isEditing = !!task;
 
@@ -91,6 +111,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
       horasTrabajadas: undefined,
       satisfaccionEquipo: undefined,
       comentarios: '',
+      tags: [],
     },
   });
 
@@ -111,6 +132,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
         horasTrabajadas: task.horasTrabajadas,
         satisfaccionEquipo: task.satisfaccionEquipo,
         comentarios: task.comentarios || '',
+        tags: task.tags || [],
       });
     } else {
       form.reset({
@@ -124,9 +146,27 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
         horasTrabajadas: undefined,
         satisfaccionEquipo: undefined,
         comentarios: '',
+        tags: [],
       });
     }
   }, [task, form]);
+
+  // Funciones para manejo de etiquetas
+  const handleCreateTag = (newTag: Omit<TaskTag, 'id'>) => {
+    const tagId = newTag.name.toLowerCase().replace(/\s+/g, '-');
+    const fullTag = { ...newTag, id: tagId };
+    setAvailableTags(prev => [...prev, fullTag]);
+  };
+
+  const handleUpdateTag = (tagId: string, updates: Partial<TaskTag>) => {
+    setAvailableTags(prev => prev.map(tag => 
+      tag.id === tagId ? { ...tag, ...updates } : tag
+    ));
+  };
+
+  const handleDeleteTag = (tagId: string) => {
+    setAvailableTags(prev => prev.filter(tag => tag.id !== tagId));
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
@@ -388,6 +428,25 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
                 </div>
               </>
             )}
+
+            {/* Etiquetas */}
+            <FormField
+              control={form.control}
+              name="tags"
+              render={({ field }) => (
+                <FormItem>
+                  <TagManager
+                    availableTags={availableTags}
+                    selectedTags={field.value || []}
+                    onTagsChange={field.onChange}
+                    onCreateTag={handleCreateTag}
+                    onUpdateTag={handleUpdateTag}
+                    onDeleteTag={handleDeleteTag}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Comentarios - Disponible para todos los estados */}
             <FormField

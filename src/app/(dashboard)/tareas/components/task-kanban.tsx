@@ -305,7 +305,7 @@ export function TaskKanban({ className }: TaskKanbanProps) {
           </div>
 
           {/* Información de tareas en backup */}
-          {backupTasks.length > 0 && (
+          {false && (
             <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
               <div className="flex items-center gap-2 text-orange-700">
                 <Info className="h-4 w-4" />

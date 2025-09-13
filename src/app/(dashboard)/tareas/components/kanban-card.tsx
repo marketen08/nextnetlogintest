@@ -195,6 +195,27 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
           <span className="truncate">{task.desarrollador}</span>
         </div>
 
+        {/* Etiquetas */}
+        {task.tags && task.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {task.tags.map(tag => (
+              <Badge
+                key={tag.id}
+                variant="secondary"
+                className="text-xs px-2 py-0.5 h-5"
+                style={{
+                  backgroundColor: tag.color + '20',
+                  color: tag.color,
+                  borderColor: tag.color,
+                  border: '1px solid'
+                }}
+              >
+                {tag.name}
+              </Badge>
+            ))}
+          </div>
+        )}
+
         {/* Fecha */}
         <div className="flex items-center gap-2 text-xs text-gray-600">
           <Calendar className="h-3 w-3" />

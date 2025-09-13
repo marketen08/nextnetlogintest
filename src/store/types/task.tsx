@@ -1,5 +1,11 @@
 export type TaskStatus = 'TASKLIST' | 'TODO' | 'DOING' | 'DONE' | 'DONE_BACKUP';
 
+export interface TaskTag {
+  id: string;
+  name: string;
+  color: string; // Color en formato hex (#FF5733) o predefinido
+}
+
 export interface Task {
   id: number;
   fecha: string; // Fecha de creación/asignación
@@ -9,6 +15,7 @@ export interface Task {
   sprint?: string;
   storyPoints?: number;
   horasEstimadas?: number;
+  tags?: TaskTag[]; // Etiquetas asignadas a la tarea
   
   // Datos completados al finalizar la tarea
   horasTrabajadas?: number;
@@ -61,6 +68,7 @@ export interface CreateTaskRequest {
   sprint?: string;
   storyPoints?: number;
   horasEstimadas?: number;
+  tags?: TaskTag[];
 }
 
 export interface UpdateTaskRequest {
@@ -74,6 +82,7 @@ export interface UpdateTaskRequest {
   horasTrabajadas?: number;
   satisfaccionEquipo?: number;
   comentarios?: string;
+  tags?: TaskTag[];
 }
 
 // Para completar una tarea

@@ -1,4 +1,4 @@
-import { Task, TaskStatus } from '@/store/types/task';
+import { Task, TaskStatus, TaskTag } from '@/store/types/task';
 
 // Mock data para desarrollo
 let tasks: Task[] = [
@@ -14,6 +14,10 @@ let tasks: Task[] = [
     horasTrabajadas: 18,
     satisfaccionEquipo: 4,
     comentarios: 'Implementación exitosa del carrito de compras',
+    tags: [
+      { id: 'frontend', name: 'Frontend', color: '#3B82F6' },
+      { id: 'critical', name: 'Crítico', color: '#EF4444' }
+    ],
     createdAt: new Date('2024-12-01').toISOString(),
     updatedAt: new Date('2024-12-03').toISOString(),
     fechaCompletado: '2024-12-03',
@@ -28,6 +32,10 @@ let tasks: Task[] = [
     storyPoints: 5,
     horasEstimadas: 12,
     comentarios: 'Trabajando en la integración con el sistema de notificaciones. Progreso al 70%.',
+    tags: [
+      { id: 'backend', name: 'Backend', color: '#10B981' },
+      { id: 'integration', name: 'Integración', color: '#8B5CF6' }
+    ],
     createdAt: new Date('2024-12-02').toISOString(),
     updatedAt: new Date('2024-12-02').toISOString(),
   },
@@ -41,6 +49,10 @@ let tasks: Task[] = [
     storyPoints: 13,
     horasEstimadas: 24,
     comentarios: 'Pendiente: Definir especificaciones de autenticación y rate limiting.',
+    tags: [
+      { id: 'security', name: 'Seguridad', color: '#F59E0B' },
+      { id: 'architecture', name: 'Arquitectura', color: '#6366F1' }
+    ],
     createdAt: new Date('2024-12-03').toISOString(),
     updatedAt: new Date('2024-12-03').toISOString(),
   },
@@ -56,6 +68,10 @@ let tasks: Task[] = [
     horasTrabajadas: 6,
     satisfaccionEquipo: 5,
     comentarios: 'Optimización exitosa de consultas',
+    tags: [
+      { id: 'performance', name: 'Performance', color: '#EC4899' },
+      { id: 'database', name: 'Base de Datos', color: '#14B8A6' }
+    ],
     createdAt: new Date('2024-12-04').toISOString(),
     updatedAt: new Date('2024-12-05').toISOString(),
     fechaCompletado: '2024-12-05',
@@ -70,6 +86,10 @@ let tasks: Task[] = [
     storyPoints: 21,
     horasEstimadas: 40,
     comentarios: 'Requiere análisis de arquitectura React Native. Evaluar dependencias.',
+    tags: [
+      { id: 'mobile', name: 'Mobile', color: '#8B5CF6' },
+      { id: 'research', name: 'Investigación', color: '#F97316' }
+    ],
     createdAt: new Date('2024-12-05').toISOString(),
     updatedAt: new Date('2024-12-05').toISOString(),
   }
