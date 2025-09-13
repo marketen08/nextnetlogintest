@@ -20,30 +20,12 @@ export default function TareasPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Gestión de Tareas</h1>
-            <p className="text-muted-foreground">
-              Sistema de seguimiento y gestión de tareas de desarrollo
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            {new Date().toLocaleDateString('es-ES', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
-            })}
-          </div>
-        </div>
-
+    <div className="h-screen flex flex-col">
+      {/* Header simplificado */}
+      <div className="flex flex-col gap-3 pb-4">
         {/* Navegación por pestañas */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+          <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
               Dashboard
@@ -58,15 +40,15 @@ export default function TareasPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="mt-6">
+          <TabsContent value="dashboard" className="flex-1 mt-4">
             <TaskDashboard />
           </TabsContent>
 
-          <TabsContent value="kanban" className="mt-6">
+          <TabsContent value="kanban" className="flex-1 mt-4 h-full">
             <TaskKanban />
           </TabsContent>
 
-          <TabsContent value="lista" className="mt-6">
+          <TabsContent value="lista" className="flex-1 mt-4">
             <TaskList />
           </TabsContent>
         </Tabs>

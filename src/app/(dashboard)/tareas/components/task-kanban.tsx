@@ -31,13 +31,6 @@ import { TaskForm } from "./task-form";
 import { KanbanColumn } from "./kanban-column";
 import { KanbanCard } from "./kanban-card";
 import { useBulkMoveToBackup } from "../hooks/useBulkMoveToBackup";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -307,134 +300,126 @@ export function TaskKanban({ className }: TaskKanbanProps) {
 
   if (error) {
     return (
-      <Card className={className}>
-        <CardContent className="pt-6">
-          <div className="text-center text-red-600">
-            Error al cargar las tareas. Por favor, intenta nuevamente.
-          </div>
-        </CardContent>
-      </Card>
+      <div className={`${className} h-full flex flex-col items-center justify-center`}>
+        <div className="text-center text-red-600">
+          Error al cargar las tareas. Por favor, intenta nuevamente.
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className={className}>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-2xl font-bold">Tablero Kanban</CardTitle>
-              <CardDescription>
-                Arrastra las tareas entre columnas para cambiar su estado
-              </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                onClick={handleRecoverBackupTasks} 
-                variant="outline" 
-                className="gap-2"
-                disabled={isRecovering}
-              >
-                <RotateCcw className="h-4 w-4" />
-                {isRecovering ? 'Recuperando...' : 'Recuperar Backup'}
-              </Button>
-              <Button onClick={() => setIsFormOpen(true)} className="gap-2">
-                <Plus className="h-4 w-4" />
-                Nueva Tarea
-              </Button>
-            </div>
+    <div className={`${className} h-full flex flex-col`}>
+      {/* Header compacto */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex gap-2">
+          <Button 
+            onClick={handleRecoverBackupTasks} 
+            variant="outline" 
+            className="gap-2"
+            disabled={isRecovering}
+          >
+            <RotateCcw className="h-4 w-4" />
+            {isRecovering ? 'Recuperando...' : 'Recuperar Backup'}
+          </Button>
+          <Button onClick={() => setIsFormOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Nueva Tarea
+          </Button>
+        </div>
+      </div>
+
+      {/* Información de tareas en backup */}
+      {false && (
+        <div className="mb-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+          <div className="flex items-center gap-2 text-orange-700">
+            <Info className="h-4 w-4" />
+            <span className="text-sm font-medium">
+              Hay {backupTasks.length} tarea{backupTasks.length > 1 ? 's' : ''} en DONE_BACKUP 
+              (no visible{backupTasks.length > 1 ? 's' : ''} en el Kanban)
+            </span>
           </div>
+        </div>
+      )}
 
-          {/* Información de tareas en backup */}
-          {false && (
-            <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-              <div className="flex items-center gap-2 text-orange-700">
-                <Info className="h-4 w-4" />
-                <span className="text-sm font-medium">
-                  Hay {backupTasks.length} tarea{backupTasks.length > 1 ? 's' : ''} en DONE_BACKUP 
-                  (no visible{backupTasks.length > 1 ? 's' : ''} en el Kanban)
-                </span>
-              </div>
-            </div>
-          )}
-        </CardHeader>
-        <CardContent>
-          {/* Filtros y búsqueda */}
-          <div className="flex flex-col gap-4 mb-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                <Input
-                  placeholder="Buscar tareas..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Button 
-                variant="outline" 
-                onClick={clearFilters}
-                className="gap-2"
-              >
-                <Filter className="h-4 w-4" />
-                Limpiar Filtros
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Select value={developerFilter} onValueChange={(value: string) => setDeveloperFilter(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filtrar por desarrollador" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      Todos los desarrolladores
-                    </div>
-                  </SelectItem>
-                  {uniqueDevelopers.map((developer: string) => (
-                    <SelectItem key={developer} value={developer}>
-                      {developer}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={projectFilter} onValueChange={(value: string) => setProjectFilter(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filtrar por proyecto" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">
-                    <div className="flex items-center gap-2">
-                      <Briefcase className="h-4 w-4" />
-                      Todos los proyectos
-                    </div>
-                  </SelectItem>
-                  {uniqueProjects.map((project: string) => (
-                    <SelectItem key={project} value={project}>
-                      {project}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      {/* Filtros compactos */}
+      <div className="flex flex-col gap-2 mb-4">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Buscar tareas..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 h-9"
+            />
           </div>
-
-          {/* Tablero Kanban */}
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {KANBAN_COLUMNS.map((column) => (
-                <div key={column.id} className="bg-gray-50 rounded-lg p-4">
-                  <div className="h-6 bg-gray-200 rounded mb-4 animate-pulse"></div>
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="h-24 bg-white rounded border mb-3 animate-pulse"></div>
-                  ))}
+          <Button 
+            variant="outline" 
+            onClick={clearFilters}
+            className="gap-2 h-9"
+            size="sm"
+          >
+            <Filter className="h-4 w-4" />
+            Limpiar
+          </Button>
+        </div>
+        
+        <div className="flex gap-2">
+          <Select value={developerFilter} onValueChange={(value: string) => setDeveloperFilter(value)}>
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Desarrollador" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  Todos
                 </div>
+              </SelectItem>
+              {uniqueDevelopers.map((developer: string) => (
+                <SelectItem key={developer} value={developer}>
+                  {developer}
+                </SelectItem>
               ))}
-            </div>
-          ) : (
+            </SelectContent>
+          </Select>
+          
+          <Select value={projectFilter} onValueChange={(value: string) => setProjectFilter(value)}>
+            <SelectTrigger className="h-9">
+              <SelectValue placeholder="Proyecto" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">
+                <div className="flex items-center gap-2">
+                  <Briefcase className="h-4 w-4" />
+                  Todos
+                </div>
+              </SelectItem>
+              {uniqueProjects.map((project: string) => (
+                <SelectItem key={project} value={project}>
+                  {project}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Tablero Kanban */}
+      <div className="flex-1 overflow-hidden">
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {KANBAN_COLUMNS.map((column) => (
+              <div key={column.id} className="bg-gray-50 rounded-lg p-4">
+                <div className="h-6 bg-gray-200 rounded mb-4 animate-pulse"></div>
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-24 bg-white rounded border mb-3 animate-pulse"></div>
+                ))}
+              </div>
+            ))}
+          </div>
+        ) : (
             <DndContext
               sensors={sensors}
               collisionDetection={customCollisionDetection}
@@ -468,21 +453,8 @@ export function TaskKanban({ className }: TaskKanbanProps) {
                 ) : null}
               </DragOverlay>
             </DndContext>
-          )}
-
-          {/* Estadísticas rápidas */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-6 border-t">
-            {KANBAN_COLUMNS.map((column) => (
-              <div key={column.id} className="text-center">
-                <div className="text-2xl font-bold text-gray-700">
-                  {tasksByStatus[column.id]?.length || 0}
-                </div>
-                <div className="text-sm text-gray-500">{column.title}</div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
 
       {/* Formulario de tareas */}
       <TaskForm
