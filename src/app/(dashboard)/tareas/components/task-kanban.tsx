@@ -12,7 +12,10 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  closestCorners,
+  closestCenter,
+  rectIntersection,
+  getFirstCollision,
+  pointerWithin,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -72,6 +75,24 @@ const KANBAN_COLUMNS: { id: TaskStatus; title: string; color: string }[] = [
   { id: 'DOING', title: 'Doing', color: 'bg-yellow-100' },
   { id: 'DONE', title: 'Done', color: 'bg-green-100' },
 ];
+
+// Función de detección de colisiones personalizada que prioriza las columnas
+const customCollisionDetection = (args: any) => {
+  const columnIds = KANBAN_COLUMNS.map(col => col.id);
+  
+  // Primero intentar detectar colisiones con las columnas usando pointerWithin
+  const pointerCollisions = pointerWithin(args);
+  const columnCollisions = pointerCollisions.filter((collision: any) => 
+    columnIds.includes(collision.id)
+  );
+  
+  if (columnCollisions.length > 0) {
+    return columnCollisions;
+  }
+  
+  // Si no hay colisiones con columnas, usar rectIntersection como respaldo
+  return rectIntersection(args);
+};
 
 interface TaskKanbanProps {
   className?: string;
@@ -150,7 +171,7 @@ export function TaskKanban({ className }: TaskKanbanProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3, // Menor distancia para activación más sensible
       },
     })
   );
@@ -375,7 +396,7 @@ export function TaskKanban({ className }: TaskKanbanProps) {
           ) : (
             <DndContext
               sensors={sensors}
-              collisionDetection={closestCorners}
+              collisionDetection={customCollisionDetection}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >

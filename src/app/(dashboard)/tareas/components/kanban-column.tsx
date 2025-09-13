@@ -42,14 +42,21 @@ export function KanbanColumn({
   });
 
   return (
-    <Card className={cn(
-      "h-fit min-h-[500px] shadow-sm border-t-4",
-      isOver && "ring-2 ring-blue-500 ring-opacity-50 bg-blue-50/30",
-      id === 'TASKLIST' && "border-t-gray-500",
-      id === 'TODO' && "border-t-blue-500", 
-      id === 'DOING' && "border-t-yellow-500",
-      id === 'DONE' && "border-t-green-500"
-    )}>
+    <div 
+      ref={setNodeRef}
+      className={cn(
+        "relative h-fit min-h-[500px]",
+        isOver && "bg-blue-50/30"
+      )}
+    >
+      <Card className={cn(
+        "h-full shadow-sm border-t-4 relative",
+        isOver && "ring-2 ring-blue-500 ring-opacity-50",
+        id === 'TASKLIST' && "border-t-gray-500",
+        id === 'TODO' && "border-t-blue-500", 
+        id === 'DOING' && "border-t-yellow-500",
+        id === 'DONE' && "border-t-green-500"
+      )}>
       <CardHeader className={cn("pb-3", color)}>
         <CardTitle className="flex items-center justify-between text-lg">
           <span className="font-semibold">{title}</span>
@@ -74,7 +81,7 @@ export function KanbanColumn({
           </div>
         )}
       </CardHeader>
-      <CardContent ref={setNodeRef} className="space-y-3 min-h-[400px] p-4">
+      <CardContent className="space-y-3 min-h-[400px] p-4">
         <SortableContext 
           items={tasks.map(task => task.id.toString())} 
           strategy={verticalListSortingStrategy}
@@ -102,5 +109,6 @@ export function KanbanColumn({
         )}
       </CardContent>
     </Card>
+    </div>
   );
 }
