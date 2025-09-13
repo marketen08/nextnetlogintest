@@ -89,17 +89,17 @@ function formatDateTime(date: Date): string {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function extendZodEffects<T extends z.ZodEffects<z.ZodObject<any>, any, any>>(schema: T, extension: z.ZodSchema) {
-    // We can't use .extend() after .refine(), so this is a workaround
-    // See https://github.com/colinhacks/zod/issues/454 for more details
-    return schema.superRefine((value, ctx) => {
-        const result = extension.safeParse(value)
-        if (!result.success) {
-            result.error.errors.forEach((issue) => ctx.addIssue(issue))
-        }
-        return result.success
-    })
-}
+// function extendZodEffects<T extends z.ZodEffects<any>>(schema: T, extension: z.ZodSchema) {
+//     // We can't use .extend() after .refine(), so this is a workaround
+//     // See https://github.com/colinhacks/zod/issues/454 for more details
+//     return schema.superRefine((value, ctx) => {
+//         const result = extension.safeParse(value)
+//         if (!result.success) {
+//             result.error.errors.forEach((issue) => ctx.addIssue(issue))
+//         }
+//         return result.success
+//     })
+// }
 
 //function handleException<T extends FieldValues> (
 //    setError: UseFormSetError<T>,
@@ -144,7 +144,7 @@ export {
     Operation,
     formatDate,
     formatDateTime,
-    extendZodEffects,
+    // extendZodEffects,
     defaultState
     //handleException
 }

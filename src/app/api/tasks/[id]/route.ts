@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMetricById, updateMetric, deleteMetric } from '../../storage';
+import { updateTask, deleteTask, getTaskById } from '../storage';
 
-// GET /api/kpis/metrics/[id] - Obtener métrica específica
+// GET /api/tasks/[id]
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -9,29 +9,35 @@ export async function GET(
   try {
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id);
-    const metric = getMetricById(id);
-
-    if (!metric) {
+    if (isNaN(id)) {
       return NextResponse.json({
         success: false,
-        message: 'Métrica no encontrada'
+        message: 'ID de tarea inválido'
+      }, { status: 400 });
+    }
+
+    const task = getTaskById(id);
+    if (!task) {
+      return NextResponse.json({
+        success: false,
+        message: 'Tarea no encontrada'
       }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      data: metric
+      data: task
     });
   } catch (error) {
     return NextResponse.json({
       success: false,
-      message: 'Error al obtener métrica',
+      message: 'Error al obtener tarea',
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
 
-// PUT /api/kpis/metrics/[id] - Actualizar métrica
+// PUT /api/tasks/[id]
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -39,32 +45,38 @@ export async function PUT(
   try {
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id);
-    const body = await request.json();
-    
-    const updatedMetric = updateMetric(id, body);
-
-    if (!updatedMetric) {
+    if (isNaN(id)) {
       return NextResponse.json({
         success: false,
-        message: 'Métrica no encontrada'
+        message: 'ID de tarea inválido'
+      }, { status: 400 });
+    }
+
+    const body = await request.json();
+    const updatedTask = updateTask(id, body);
+    
+    if (!updatedTask) {
+      return NextResponse.json({
+        success: false,
+        message: 'Tarea no encontrada'
       }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      data: updatedMetric,
-      message: 'Métrica actualizada exitosamente'
+      data: updatedTask,
+      message: 'Tarea actualizada exitosamente'
     });
   } catch (error) {
     return NextResponse.json({
       success: false,
-      message: 'Error al actualizar métrica',
+      message: 'Error al actualizar tarea',
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
 }
 
-// DELETE /api/kpis/metrics/[id] - Eliminar métrica
+// DELETE /api/tasks/[id]
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -72,23 +84,29 @@ export async function DELETE(
   try {
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id);
-    const success = deleteMetric(id);
-
-    if (!success) {
+    if (isNaN(id)) {
       return NextResponse.json({
         success: false,
-        message: 'Métrica no encontrada'
+        message: 'ID de tarea inválido'
+      }, { status: 400 });
+    }
+
+    const deleted = deleteTask(id);
+    if (!deleted) {
+      return NextResponse.json({
+        success: false,
+        message: 'Tarea no encontrada'
       }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Métrica eliminada exitosamente'
+      message: 'Tarea eliminada exitosamente'
     });
   } catch (error) {
     return NextResponse.json({
       success: false,
-      message: 'Error al eliminar métrica',
+      message: 'Error al eliminar tarea',
       error: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }

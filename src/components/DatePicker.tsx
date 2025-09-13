@@ -92,7 +92,7 @@ function DateTimePicker({
 
     // ** Handlers
     function formatTime(date?: Date) {
-        const pad = (n) => n.toString().padStart(2, '0');
+        const pad = (n: number) => n.toString().padStart(2, '0');
 
         if (date) {
             return `${pad(date.getHours())}:${pad(date.getMinutes())}`;

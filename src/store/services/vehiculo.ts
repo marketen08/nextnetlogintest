@@ -1,7 +1,21 @@
 import { api } from './api';
 
-// ** Types imports
-import { VehiculoDTO, VehiculosDTO, VehiculoType } from '@/screens/vehiculos/types';
+// ** Tipos temporales para vehículos
+interface VehiculoDTO {
+    id: number;
+    marca: string;
+    modelo: string;
+    tipo: VehiculoType;
+    [key: string]: any;
+}
+
+interface VehiculosDTO {
+    data: VehiculoDTO[];
+    success: boolean;
+    message?: string;
+}
+
+type VehiculoType = 'auto' | 'camion' | 'moto';
 
 const url = '/vehiculo';
 

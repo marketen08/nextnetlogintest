@@ -1,6 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { ProdServ } from '@/screens/productos/types';
 import { prodServAPI } from '../services/prodserv';
+
+// Tipo temporal para ProdServ
+interface ProdServ {
+    id: number;
+    tipo: string;
+    nombre: string;
+    [key: string]: any;
+}
 
 interface DataState {
     productos: ProdServ[]

@@ -1,7 +1,21 @@
 import { api } from './api';
 
-// ** Types imports
-import { Usuario, UsuariosDTO, UsuarioType } from '@/screens/usuarios/types';
+// ** Tipos temporales para usuarios
+interface Usuario {
+    id: number;
+    nombre: string;
+    email: string;
+    role: UsuarioType;
+    [key: string]: any;
+}
+
+interface UsuariosDTO {
+    data: Usuario[];
+    success: boolean;
+    message?: string;
+}
+
+type UsuarioType = 'admin' | 'user' | 'guest';
 
 const url = '/usuario';
 

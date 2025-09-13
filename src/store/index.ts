@@ -18,6 +18,7 @@ import userReducer from './features/user';
 import dataReducer from './features/data';
 import { api } from './services/api';
 import { kpiApi } from './services/kpis';
+import { taskApi } from './services/tasks';
 
 const persistConfig = {
     key: 'root',
@@ -30,12 +31,13 @@ const persistConfig = {
 const combinedReducers = combineReducers({
     [api.reducerPath]: api.reducer,
     [kpiApi.reducerPath]: kpiApi.reducer,
+    [taskApi.reducerPath]: taskApi.reducer,
     user: userReducer,
     data: dataReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, combinedReducers);
-const middlewares = [api.middleware, kpiApi.middleware];
+const middlewares = [api.middleware, kpiApi.middleware, taskApi.middleware];
 
 export const store = configureStore({
     reducer: persistedReducer,

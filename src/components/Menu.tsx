@@ -1,7 +1,8 @@
 ﻿import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { LogOut, PenToolIcon as Tool, Warehouse, MenuIcon } from "lucide-react"
+import { LogOut, PenToolIcon as Tool, Warehouse, MenuIcon, Target } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import Link from "next/link"
 
 // ** Redux imports
 import { useAppDispatch } from "../store/hooks"
@@ -36,18 +37,32 @@ export default function Menu() {
             {/* Desktop Menu */}
             <div className="hidden sm:flex justify-between items-center gap-4 bg-card rounded-lg shadow-sm p-4 border">
                 <div className="flex gap-3">
-                    <Button variant={activeButton === "pañol" ? "default" : "outline"} onClick={() => handleButtonClick("pañol")}>
-                        <Warehouse className="mr-2 h-4 w-4" />
-                        Pañol
-                    </Button>
+                    <Link href="/pañol">
+                        <Button variant={activeButton === "pañol" ? "default" : "outline"} onClick={() => handleButtonClick("pañol")}>
+                            <Warehouse className="mr-2 h-4 w-4" />
+                            Pañol
+                        </Button>
+                    </Link>
 
-                    <Button
-                        variant={activeButton === "taller" ? "default" : "outline"}
-                        onClick={() => handleButtonClick("taller")}
-                    >
-                        <Tool className="mr-2 h-4 w-4" />
-                        Taller
-                    </Button>
+                    <Link href="/taller">
+                        <Button
+                            variant={activeButton === "taller" ? "default" : "outline"}
+                            onClick={() => handleButtonClick("taller")}
+                        >
+                            <Tool className="mr-2 h-4 w-4" />
+                            Taller
+                        </Button>
+                    </Link>
+
+                    <Link href="/tareas">
+                        <Button
+                            variant={activeButton === "tareas" ? "default" : "outline"}
+                            onClick={() => handleButtonClick("tareas")}
+                        >
+                            <Target className="mr-2 h-4 w-4" />
+                            Tareas
+                        </Button>
+                    </Link>
                 </div>
 
                 <Button variant="destructive" onClick={handleLogout}>
@@ -67,23 +82,38 @@ export default function Menu() {
                     </SheetTrigger>
                     <SheetContent side="left" className="w-[240px] sm:w-[300px]">
                         <div className="flex flex-col gap-4 mt-8">
-                            <Button
-                                variant={activeButton === "pañol" ? "default" : "outline"}
-                                className="justify-start"
-                                onClick={() => handleButtonClick("pañol")}
-                            >
-                                <Warehouse className="mr-2 h-4 w-4" />
-                                Pañol
-                            </Button>
+                            <Link href="/pañol">
+                                <Button
+                                    variant={activeButton === "pañol" ? "default" : "outline"}
+                                    className="justify-start w-full"
+                                    onClick={() => handleButtonClick("pañol")}
+                                >
+                                    <Warehouse className="mr-2 h-4 w-4" />
+                                    Pañol
+                                </Button>
+                            </Link>
 
-                            <Button
-                                variant={activeButton === "taller" ? "default" : "outline"}
-                                className="justify-start"
-                                onClick={() => handleButtonClick("taller")}
-                            >
-                                <Tool className="mr-2 h-4 w-4" />
-                                Taller
-                            </Button>
+                            <Link href="/taller">
+                                <Button
+                                    variant={activeButton === "taller" ? "default" : "outline"}
+                                    className="justify-start w-full"
+                                    onClick={() => handleButtonClick("taller")}
+                                >
+                                    <Tool className="mr-2 h-4 w-4" />
+                                    Taller
+                                </Button>
+                            </Link>
+
+                            <Link href="/tareas">
+                                <Button
+                                    variant={activeButton === "tareas" ? "default" : "outline"}
+                                    className="justify-start w-full"
+                                    onClick={() => handleButtonClick("tareas")}
+                                >
+                                    <Target className="mr-2 h-4 w-4" />
+                                    Tareas
+                                </Button>
+                            </Link>
 
                             <Button variant="destructive" className="justify-start mt-4" onClick={handleLogout}>
                                 <LogOut className="mr-2 h-4 w-4" />
@@ -94,7 +124,9 @@ export default function Menu() {
                 </Sheet>
 
                 <div className="text-lg font-medium">
-                    {activeButton === "pañol" ? "Pañol" : activeButton === "taller" ? "Taller" : "Menu"}
+                    {activeButton === "pañol" ? "Pañol" : 
+                     activeButton === "taller" ? "Taller" : 
+                     activeButton === "tareas" ? "Tareas" : "Menu"}
                 </div>
 
                 <Button variant="destructive" size="sm" onClick={handleLogout}>
