@@ -21,11 +21,11 @@ export default function TareasPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
-      {/* Header simplificado */}
-      <div className="flex flex-col gap-2 pb-2 flex-shrink-0">
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex flex-col gap-4">
         {/* Navegación por pestañas */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
@@ -41,16 +41,20 @@ export default function TareasPage() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="flex-1 mt-2 overflow-hidden">
-            <TestUsersConnection />
-            <TaskDashboard />
+          <TabsContent value="dashboard" className="mt-4">
+            <div className="space-y-4">
+              <TestUsersConnection />
+              <TaskDashboard />
+            </div>
           </TabsContent>
 
-          <TabsContent value="kanban" className="flex-1 mt-2 overflow-hidden">
-            <TaskKanban />
+          <TabsContent value="kanban" className="mt-4">
+            <div className="h-[calc(100vh-200px)] overflow-hidden">
+              <TaskKanban />
+            </div>
           </TabsContent>
 
-          <TabsContent value="lista" className="flex-1 mt-2 overflow-hidden">
+          <TabsContent value="lista" className="mt-4">
             <TaskList />
           </TabsContent>
         </Tabs>
