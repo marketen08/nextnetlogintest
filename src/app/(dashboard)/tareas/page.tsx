@@ -4,6 +4,7 @@ import { useState } from "react";
 import { TaskDashboard } from "./components/task-dashboard";
 import { TaskList } from "./components/task-list";
 import { TaskKanban } from "./components/task-kanban";
+import { TestUsersConnection } from "@/components/test-users-connection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { 
@@ -41,6 +42,7 @@ export default function TareasPage() {
           </TabsList>
 
           <TabsContent value="dashboard" className="flex-1 mt-2 overflow-hidden">
+            <TestUsersConnection />
             <TaskDashboard />
           </TabsContent>
 

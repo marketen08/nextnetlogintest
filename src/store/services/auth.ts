@@ -1,5 +1,28 @@
 import { api } from './api';
 
+// ** Tipos para usuarios del sistema
+interface Usuario {
+    id: string;
+    email: string;
+    userName: string;
+    nombre: string | null;
+    apellido: string | null;
+    profileImageUrl: string | null;
+    proyectoId: string | null;
+    clienteId: string | null;
+    sociedadId: string | null;
+    terminalId: string | null;
+    color: string | null;
+}
+
+interface UsuariosPagedResponse {
+    data: Usuario[];
+    total: number;
+    page: number;
+    pageSize: number;
+    hasNextPage: boolean;
+}
+
 export const authAPI = api.injectEndpoints({
     endpoints: (build) => ({
         login: build.mutation({
@@ -43,7 +66,7 @@ export const authAPI = api.injectEndpoints({
                 method: 'GET'
             })
         }),
-        getUsersPaged: build.query<any[], void>({
+        getUsersPaged: build.query<UsuariosPagedResponse, void>({
             query: () => ({
                 url: '/auth/paged',
                 method: 'GET'

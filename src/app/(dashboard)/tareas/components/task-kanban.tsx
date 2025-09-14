@@ -26,6 +26,7 @@ import {
   useUpdateTaskMutation,
   useDeleteTaskMutation,
 } from "@/store/services/tasks";
+import { useGetUsersPagedQuery } from "@/store/services/auth";
 import { Task, TaskStatus } from "@/store/types/task";
 import { TaskForm } from "./task-form";
 import { KanbanColumn } from "./kanban-column";
@@ -102,6 +103,9 @@ export function TaskKanban({ className }: TaskKanbanProps) {
   // Hook para mover tareas a backup
   const { moveAllToBackup, isMoving: isMovingToBackup } = useBulkMoveToBackup();
   
+  // Obtener usuarios del sistema para los filtros
+  const { data: usersData, isLoading: isLoadingUsers } = useGetUsersPagedQuery();
+  
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [developerFilter, setDeveloperFilter] = useState<string | 'all'>('all');
@@ -159,7 +163,11 @@ export function TaskKanban({ className }: TaskKanbanProps) {
   }, [kanbanTasks]);
 
   // Obtener valores únicos para filtros
-  const uniqueDevelopers = Array.from(new Set(tasks.map((t: Task) => t.desarrollador)));
+  const uniqueDevelopers = usersData?.data?.map((usuario) => {
+    return usuario.nombre && usuario.apellido 
+      ? `${usuario.nombre} ${usuario.apellido}`
+      : usuario.nombre || usuario.apellido || usuario.email;
+  }) || [];
   const uniqueProjects = Array.from(new Set(tasks.map((t: Task) => t.proyecto)));
 
   // Configurar sensores para drag and drop

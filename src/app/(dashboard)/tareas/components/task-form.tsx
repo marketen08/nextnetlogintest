@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import * as z from "zod";
 import { useAddTaskMutation, useUpdateTaskMutation } from "@/store/services/tasks";
+import { useGetUsersPagedQuery } from "@/store/services/auth";
 import { Task, TaskStatus, TaskTag, ChecklistItem } from "@/store/types/task";
 import { TagManager } from "./tag-manager";
 import { ChecklistManager } from "./checklist-manager";
@@ -88,6 +89,9 @@ interface TaskFormProps {
 export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps) {
   const [addTask, { isLoading: isAdding }] = useAddTaskMutation();
   const [updateTask, { isLoading: isUpdating }] = useUpdateTaskMutation();
+  
+  // Obtener usuarios del sistema
+  const { data: usersData, isLoading: isLoadingUsers } = useGetUsersPagedQuery();
   
   // Estado para etiquetas disponibles (en una implementación real vendría de una API)
   const [availableTags, setAvailableTags] = useState<TaskTag[]>([
@@ -316,9 +320,36 @@ export function TaskForm({ open, onOpenChange, task, onSuccess }: TaskFormProps)
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Desarrollador</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nombre del desarrollador" {...field} />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccionar desarrollador" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {isLoadingUsers ? (
+                          <SelectItem value="loading" disabled>
+                            Cargando usuarios...
+                          </SelectItem>
+                        ) : usersData?.data?.length ? (
+                          usersData.data.map((usuario) => {
+                            const nombreCompleto = usuario.nombre && usuario.apellido 
+                              ? `${usuario.nombre} ${usuario.apellido}`
+                              : usuario.nombre || usuario.apellido || usuario.email;
+                            
+                            return (
+                              <SelectItem key={usuario.id} value={nombreCompleto}>
+                                {nombreCompleto}
+                              </SelectItem>
+                            );
+                          })
+                        ) : (
+                          <SelectItem value="no-users" disabled>
+                            No hay usuarios disponibles
+                          </SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
