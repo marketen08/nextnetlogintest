@@ -42,8 +42,14 @@ export const authAPI = api.injectEndpoints({
                 url: '/auth/users',
                 method: 'GET'
             })
-        })
+        }),
+        getUsersPaged: build.query<any[], void>({
+            query: () => ({
+                url: '/auth/paged',
+                method: 'GET'
+            })
+        }),
     }),
 })
 
-export const { useLoginMutation, useLoginGoogleMutation, useLoginMicrosoftMutation, useRegisterMutation, useGetUsersQuery } = authAPI
+export const { useLoginMutation, useLoginGoogleMutation, useLoginMicrosoftMutation, useRegisterMutation, useGetUsersQuery, useGetUsersPagedQuery } = authAPI
