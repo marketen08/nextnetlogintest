@@ -20,7 +20,8 @@ import {
   TrendingUp,
   User,
   Shield,
-  Building2
+  Building2,
+  CheckSquare
 } from 'lucide-react';
 
 const menuItems = [
@@ -28,6 +29,12 @@ const menuItems = [
     title: 'Dashboard',
     href: '/dashboard',
     icon: Home,
+    roles: ['all']
+  },
+  {
+    title: 'Tareas',
+    href: '/tareas',
+    icon: CheckSquare,
     roles: ['all']
   },
   {
