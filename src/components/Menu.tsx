@@ -1,6 +1,6 @@
 ﻿import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { LogOut, PenToolIcon as Tool, Warehouse, MenuIcon, Target } from "lucide-react"
+import { LogOut, PenToolIcon as Tool, Warehouse, MenuIcon, Target, Users } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import Link from "next/link"
 
@@ -63,6 +63,16 @@ export default function Menu() {
                             Tareas
                         </Button>
                     </Link>
+
+                    <Link href="/recursos">
+                        <Button
+                            variant={activeButton === "recursos" ? "default" : "outline"}
+                            onClick={() => handleButtonClick("recursos")}
+                        >
+                            <Users className="mr-2 h-4 w-4" />
+                            Recursos
+                        </Button>
+                    </Link>
                 </div>
 
                 <Button variant="destructive" onClick={handleLogout}>
@@ -115,6 +125,17 @@ export default function Menu() {
                                 </Button>
                             </Link>
 
+                            <Link href="/recursos">
+                                <Button
+                                    variant={activeButton === "recursos" ? "default" : "outline"}
+                                    className="justify-start w-full"
+                                    onClick={() => handleButtonClick("recursos")}
+                                >
+                                    <Users className="mr-2 h-4 w-4" />
+                                    Recursos
+                                </Button>
+                            </Link>
+
                             <Button variant="destructive" className="justify-start mt-4" onClick={handleLogout}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Cerrar sesión
@@ -126,7 +147,8 @@ export default function Menu() {
                 <div className="text-lg font-medium">
                     {activeButton === "pañol" ? "Pañol" : 
                      activeButton === "taller" ? "Taller" : 
-                     activeButton === "tareas" ? "Tareas" : "Menu"}
+                     activeButton === "tareas" ? "Tareas" :
+                     activeButton === "recursos" ? "Recursos" : "Menu"}
                 </div>
 
                 <Button variant="destructive" size="sm" onClick={handleLogout}>
