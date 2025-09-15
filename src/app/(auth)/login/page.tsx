@@ -59,8 +59,8 @@ const Login = () => {
         mode: 'onSubmit',
         resolver: zodResolver(formSchema),
         defaultValues: {
-            email: 'admin@admin.com',
-            password: 'Admin123456'
+            email: 'test@test.com',
+            password: 'Test123*'
         },
     })
 
@@ -92,7 +92,7 @@ const Login = () => {
             form.setError('root.serverError', { 
                 type: 'server', 
                 message: error && typeof error === 'object' && 'status' in error && error.status === 'FETCH_ERROR' 
-                    ? "No se puede conectar con el servidor. Verifique que el servidor esté ejecutándose en http://localhost:7182" 
+                    ? "No se puede conectar con el servidor. Verifique que el servidor esté ejecutándose en http://localhost:7232" 
                     : "Credenciales inválidas" 
             });
         }

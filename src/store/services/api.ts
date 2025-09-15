@@ -14,7 +14,7 @@ import { decodeJWT } from '@/lib/utils';
 const mutex = new Mutex()
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://localhost:7182/api',
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://localhost:7232/api',
     prepareHeaders: (headers, api) => {
         headers.set('Accept', 'application/json');
         // By default, if we have a token in the store, let's use that for authenticated requests

@@ -6,7 +6,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { persistor, store } from '@/store';
 import { Toaster } from "sonner";
 
-const CLIENT_ID = '812661947420-lnf9dpe4nnmlull4isgi2vo92jfat1a5.apps.googleusercontent.com';
+const CLIENT_ID = '377070938930-rdbim8psfveic49hu2flba1gc4s3genp.apps.googleusercontent.com';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
