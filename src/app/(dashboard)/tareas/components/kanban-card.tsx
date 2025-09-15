@@ -126,7 +126,7 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
       style={style}
       title="Clic para editar • Arrastra para mover"
       className={cn(
-        "cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4",
+        "cursor-pointer hover:shadow-lg transition-all duration-200 border-l-4 py-3",
         (isSortableDragging || isDragging) && "shadow-xl rotate-2 z-50 cursor-grabbing",
         !isSortableDragging && !isDragging && "hover:scale-[1.02]",
         isCompleted && "border-l-green-400 bg-green-50/50",
@@ -138,7 +138,7 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
       {...attributes}
       {...combinedListeners}
     >
-      <CardHeader className="pb-1 pt-3 px-3">
+      <CardHeader className="pb-0 pt-0 px-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1">
@@ -148,7 +148,7 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
               <Edit className="h-3 w-3 text-gray-400 opacity-60 hover:opacity-100 transition-opacity" />
             </div>
             {task.sprint && (
-              <CardDescription className="text-xs">
+              <CardDescription className="text-xs mt-0.5">
                 {task.sprint}
               </CardDescription>
             )}
@@ -189,7 +189,7 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
         </div>
       </CardHeader>
       
-      <CardContent className="pt-0 px-3 pb-2 space-y-2">
+      <CardContent className="pt-0 px-3 pb-0 space-y-1.5">
         {/* Desarrollador */}
         <div className="flex items-center gap-2 text-xs text-gray-600">
           <User className="h-3 w-3" />
@@ -219,7 +219,9 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
 
         {/* Progreso del Checklist */}
         {task.checklist && task.checklist.length > 0 && (
-          <ChecklistProgress checklist={task.checklist} />
+          <div className="py-0.5">
+            <ChecklistProgress checklist={task.checklist} />
+          </div>
         )}
 
         {/* Fecha */}
@@ -269,7 +271,7 @@ export function KanbanCard({ task, onEdit, onDelete, isDragging = false }: Kanba
         {/* Comentarios (disponibles para todos los estados) */}
         {task.comentarios && (
           <div className={cn(
-            "text-xs p-2 rounded border-l-2 relative",
+            "text-xs p-1.5 rounded border-l-2 relative",
             isCompleted 
               ? "text-gray-600 bg-gray-50 border-green-300" 
               : task.estado === 'DOING'
