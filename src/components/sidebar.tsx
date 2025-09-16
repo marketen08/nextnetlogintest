@@ -21,7 +21,8 @@ import {
   User,
   Shield,
   Building2,
-  CheckSquare
+  CheckSquare,
+  UserCheck
 } from 'lucide-react';
 
 const menuItems = [
@@ -80,6 +81,12 @@ const menuItems = [
     roles: ['admin', 'moderator']
   },
   {
+    title: 'Roles',
+    href: '/roles',
+    icon: UserCheck,
+    roles: ['admin']
+  },
+  {
     title: 'Admin Panel',
     href: '/admin',
     icon: Shield,
@@ -90,55 +97,6 @@ const menuItems = [
     href: '/configuracion',
     icon: Settings,
     roles: ['admin']
-  },
-  {
-    title: 'Debug Scroll',
-    href: '/debug-scroll',
-    icon: Settings,
-    roles: ['all']
-  },
-  {
-    title: 'Scroll Test',
-    href: '/scroll-test',
-    icon: Settings,
-    roles: ['all']
-  },
-  // Elementos adicionales para testing del scroll
-  {
-    title: 'Reportes',
-    href: '/reportes',
-    icon: BarChart3,
-    roles: ['all']
-  },
-  {
-    title: 'Inventario',
-    href: '/inventario',
-    icon: Package,
-    roles: ['all']
-  },
-  {
-    title: 'Finanzas',
-    href: '/finanzas',
-    icon: TrendingUp,
-    roles: ['all']
-  },
-  {
-    title: 'Marketing',
-    href: '/marketing',
-    icon: Users,
-    roles: ['all']
-  },
-  {
-    title: 'Ventas',
-    href: '/ventas',
-    icon: TrendingUp,
-    roles: ['all']
-  },
-  {
-    title: 'Soporte',
-    href: '/soporte',
-    icon: User,
-    roles: ['all']
   }
 ];
 
