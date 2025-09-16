@@ -21,23 +21,26 @@ export default function TareasPage() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-4">
         {/* Navegación por pestañas */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-3">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Dashboard
+          <TabsList className="grid w-full max-w-xs sm:max-w-md grid-cols-3 h-9 sm:h-10">
+            <TabsTrigger value="dashboard" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <BarChart3 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Dashboard</span>
+              <span className="xs:hidden">Dash</span>
             </TabsTrigger>
-            <TabsTrigger value="kanban" className="flex items-center gap-2">
-              <Columns3 className="h-4 w-4" />
-              Kanban
+            <TabsTrigger value="kanban" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <Columns3 className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Kanban</span>
+              <span className="xs:hidden">KB</span>
             </TabsTrigger>
-            <TabsTrigger value="lista" className="flex items-center gap-2">
-              <List className="h-4 w-4" />
-              Lista
+            <TabsTrigger value="lista" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
+              <List className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">Lista</span>
+              <span className="xs:hidden">List</span>
             </TabsTrigger>
           </TabsList>
 

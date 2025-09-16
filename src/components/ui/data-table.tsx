@@ -98,14 +98,14 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
-        <Table>
+      <div className="rounded-md border overflow-x-auto">
+        <Table className="min-w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="whitespace-nowrap">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -126,7 +126,7 @@ export function DataTable<TData, TValue>({
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="whitespace-nowrap">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -144,8 +144,8 @@ export function DataTable<TData, TValue>({
       </div>
 
       {pagination && (
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
+        <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0 sm:space-x-2 py-4">
+          <div className="flex-1 text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
             Mostrando {Math.min((pagination.page - 1) * pagination.pageSize + 1, pagination.total)} a{" "}
             {Math.min(pagination.page * pagination.pageSize, pagination.total)} de{" "}
             {pagination.total} resultado(s)
@@ -156,20 +156,25 @@ export function DataTable<TData, TValue>({
               size="sm"
               onClick={() => pagination.onPageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
+              className="h-8 sm:h-9"
             >
               <ChevronLeftIcon className="h-4 w-4" />
-              Anterior
+              <span className="hidden sm:inline ml-1">Anterior</span>
             </Button>
-            <div className="text-sm font-medium">
-              Página {pagination.page} de {Math.ceil(pagination.total / pagination.pageSize)}
+            <div className="text-xs sm:text-sm font-medium px-2">
+              <span className="hidden sm:inline">Página </span>
+              {pagination.page} <span className="hidden sm:inline">de </span>
+              <span className="sm:hidden">/</span>
+              {Math.ceil(pagination.total / pagination.pageSize)}
             </div>
             <Button
               variant="outline"
               size="sm"
               onClick={() => pagination.onPageChange(pagination.page + 1)}
               disabled={pagination.page >= Math.ceil(pagination.total / pagination.pageSize)}
+              className="h-8 sm:h-9"
             >
-              Siguiente
+              <span className="hidden sm:inline mr-1">Siguiente</span>
               <ChevronRightIcon className="h-4 w-4" />
             </Button>
           </div>

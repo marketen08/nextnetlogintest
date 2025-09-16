@@ -118,7 +118,7 @@ export default function RecursosList() {
       cell: ({ row }) => {
         const recurso = row.original;
         return (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button
               variant="ghost"
               size="sm"
@@ -126,16 +126,19 @@ export default function RecursosList() {
                 setSelectedRecurso(recurso);
                 setIsEditOpen(true);
               }}
+              className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
             >
               <Edit className="h-4 w-4" />
+              <span className="hidden sm:ml-2 sm:inline">Editar</span>
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3">
                   <Trash2 className="h-4 w-4" />
+                  <span className="hidden sm:ml-2 sm:inline">Eliminar</span>
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="mx-4">
                 <AlertDialogHeader>
                   <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -143,11 +146,11 @@ export default function RecursosList() {
                     el recurso {recurso.nombre} {recurso.apellido}.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+                  <AlertDialogCancel className="w-full sm:w-auto">Cancelar</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => handleDelete(recurso.id!)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    className="w-full sm:w-auto bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
                     Eliminar
                   </AlertDialogAction>
@@ -205,22 +208,23 @@ export default function RecursosList() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Recursos</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Recursos</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Gestión de recursos humanos
           </p>
         </div>
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
-              Agregar Recurso
+              <span className="hidden xs:inline">Agregar Recurso</span>
+              <span className="xs:hidden">Agregar</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto mx-4">
             <DialogHeader>
               <DialogTitle>Crear Nuevo Recurso</DialogTitle>
             </DialogHeader>
@@ -233,23 +237,23 @@ export default function RecursosList() {
       </div>
 
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Lista de Recursos</CardTitle>
+        <CardHeader className="pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <CardTitle className="text-lg sm:text-xl">Lista de Recursos</CardTitle>
             <div className="flex items-center space-x-2">
-              <div className="relative">
+              <div className="relative w-full sm:w-auto">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar recursos..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-8 w-[300px]"
+                  className="pl-8 w-full sm:w-[300px]"
                 />
               </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-2 sm:px-6">
           <DataTable
             columns={columns}
             data={filteredData}
@@ -267,7 +271,7 @@ export default function RecursosList() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto mx-4">
           <DialogHeader>
             <DialogTitle>Editar Recurso</DialogTitle>
           </DialogHeader>

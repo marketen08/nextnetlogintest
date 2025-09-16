@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface SidebarContextType {
   isOpen: boolean;
@@ -17,6 +17,30 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   const toggle = () => setIsOpen(prev => !prev);
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
+
+  // Close sidebar on desktop resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close sidebar on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        close();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen]);
 
   return (
     <SidebarContext.Provider value={{ isOpen, toggle, open, close }}>

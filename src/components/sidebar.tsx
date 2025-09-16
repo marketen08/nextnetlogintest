@@ -38,6 +38,12 @@ const menuItems = [
     roles: ['all']
   },
   {
+    title: 'Recursos',
+    href: '/recursos',
+    icon: Users,
+    roles: ['all']
+  },
+  {
     title: 'KPIs',
     href: '/kpis',
     icon: BarChart3,
@@ -70,7 +76,7 @@ const menuItems = [
   {
     title: 'Usuarios',
     href: '/usuarios',
-    icon: Users,
+    icon: Shield,
     roles: ['admin', 'moderator']
   },
   {
@@ -84,6 +90,55 @@ const menuItems = [
     href: '/configuracion',
     icon: Settings,
     roles: ['admin']
+  },
+  {
+    title: 'Debug Scroll',
+    href: '/debug-scroll',
+    icon: Settings,
+    roles: ['all']
+  },
+  {
+    title: 'Scroll Test',
+    href: '/scroll-test',
+    icon: Settings,
+    roles: ['all']
+  },
+  // Elementos adicionales para testing del scroll
+  {
+    title: 'Reportes',
+    href: '/reportes',
+    icon: BarChart3,
+    roles: ['all']
+  },
+  {
+    title: 'Inventario',
+    href: '/inventario',
+    icon: Package,
+    roles: ['all']
+  },
+  {
+    title: 'Finanzas',
+    href: '/finanzas',
+    icon: TrendingUp,
+    roles: ['all']
+  },
+  {
+    title: 'Marketing',
+    href: '/marketing',
+    icon: Users,
+    roles: ['all']
+  },
+  {
+    title: 'Ventas',
+    href: '/ventas',
+    icon: TrendingUp,
+    roles: ['all']
+  },
+  {
+    title: 'Soporte',
+    href: '/soporte',
+    icon: User,
+    roles: ['all']
   }
 ];
 
@@ -132,25 +187,29 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-background border-r transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:static lg:z-auto",
-          isOpen ? "translate-x-0" : "-translate-x-full"
+          // Base styles
+          "h-full w-72 bg-background border-r flex flex-col lg:w-64 overflow-hidden",
+          // Mobile: fixed overlay with animation
+          "lg:relative lg:translate-x-0 lg:z-auto",
+          "fixed top-0 left-0 z-50 transform transition-transform duration-300 ease-in-out",
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b lg:hidden">
+        {/* Header - Fixed */}
+        <div className="flex items-center justify-between p-4 border-b lg:hidden flex-shrink-0">
           <h2 className="text-lg font-semibold">Menú</h2>
           <Button variant="ghost" size="icon" onClick={close}>
             <X className="w-5 h-5" />
           </Button>
         </div>
 
-        {/* Desktop header */}
-        <div className="hidden lg:flex items-center justify-center p-4 border-b">
+        {/* Desktop header - Fixed */}
+        <div className="hidden lg:flex items-center justify-center p-4 border-b flex-shrink-0">
           <h2 className="text-lg font-semibold">TestNet</h2>
         </div>
 
-        {/* User info */}
-        <div className="p-4 border-b">
+        {/* User info - Fixed */}
+        <div className="p-4 border-b flex-shrink-0">
           <div className="flex items-center space-x-3">
             <ProfileImage user={currentUser} size="lg" />
             <div className="flex-1 min-w-0">
@@ -180,45 +239,49 @@ export function Sidebar() {
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4">
-          <ul className="space-y-2">
-            {menuItems
-              .filter(shouldShowItem)
-              .map((item) => {
-                const Icon = item.icon;
-                const isActive = pathname === item.href;
-                
-                return (
-                  <li key={item.href}>
-                    <Link
-                      href={item.href}
-                      onClick={() => {
-                        // Close sidebar on mobile when navigating
-                        if (window.innerWidth < 1024) {
-                          close();
-                        }
-                      }}
-                    >
-                      <Button
-                        variant={isActive ? "secondary" : "ghost"}
-                        className={cn(
-                          "w-full justify-start gap-3",
-                          isActive && "bg-secondary"
-                        )}
-                      >
-                        <Icon className="w-4 h-4" />
-                        {item.title}
-                      </Button>
-                    </Link>
-                  </li>
-                );
-              })}
-          </ul>
-        </nav>
+        {/* Navigation - Scrollable container */}
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full overflow-y-auto custom-scrollbar">
+            <nav className="p-4">
+              <ul className="space-y-1 pb-4">
+                {menuItems
+                  .filter(shouldShowItem)
+                  .map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+                    
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          href={item.href}
+                          onClick={() => {
+                            // Close sidebar on mobile when navigating
+                            if (window.innerWidth < 1024) {
+                              close();
+                            }
+                          }}
+                        >
+                          <Button
+                            variant={isActive ? "secondary" : "ghost"}
+                            className={cn(
+                              "w-full justify-start gap-3 h-10",
+                              isActive && "bg-secondary"
+                            )}
+                          >
+                            <Icon className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">{item.title}</span>
+                          </Button>
+                        </Link>
+                      </li>
+                    );
+                  })}
+              </ul>
+            </nav>
+          </div>
+        </div>
 
-        {/* Footer */}
-        <div className="p-4 border-t">
+        {/* Footer - Fixed */}
+        <div className="p-4 border-t flex-shrink-0">
           <p className="text-xs text-muted-foreground text-center">
             TestNet v1.0
           </p>
