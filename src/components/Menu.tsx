@@ -64,13 +64,13 @@ export default function Menu() {
                         </Button>
                     </Link>
 
-                    <Link href="/recursos">
+                    <Link href="/colaboradores">
                         <Button
-                            variant={activeButton === "recursos" ? "default" : "outline"}
-                            onClick={() => handleButtonClick("recursos")}
+                            variant={activeButton === "colaboradores" ? "default" : "outline"}
+                            onClick={() => handleButtonClick("colaboradores")}
                         >
                             <Users className="mr-2 h-4 w-4" />
-                            Recursos
+                            Colaboradores
                         </Button>
                     </Link>
                 </div>
@@ -125,14 +125,14 @@ export default function Menu() {
                                 </Button>
                             </Link>
 
-                            <Link href="/recursos">
+                            <Link href="/colaboradores">
                                 <Button
-                                    variant={activeButton === "recursos" ? "default" : "outline"}
+                                    variant={activeButton === "colaboradores" ? "default" : "outline"}
                                     className="justify-start w-full"
-                                    onClick={() => handleButtonClick("recursos")}
+                                    onClick={() => handleButtonClick("colaboradores")}
                                 >
                                     <Users className="mr-2 h-4 w-4" />
-                                    Recursos
+                                    Colaboradores
                                 </Button>
                             </Link>
 
@@ -148,7 +148,7 @@ export default function Menu() {
                     {activeButton === "pañol" ? "Pañol" : 
                      activeButton === "taller" ? "Taller" : 
                      activeButton === "tareas" ? "Tareas" :
-                     activeButton === "recursos" ? "Recursos" : "Menu"}
+                     activeButton === "colaboradores" ? "Colaboradores" : "Menu"}
                 </div>
 
                 <Button variant="destructive" size="sm" onClick={handleLogout}>

@@ -39,8 +39,8 @@ const menuItems = [
     roles: ['all']
   },
   {
-    title: 'Recursos',
-    href: '/recursos',
+    title: 'Colaboradores',
+    href: '/colaboradores',
     icon: Users,
     roles: ['all']
   },
