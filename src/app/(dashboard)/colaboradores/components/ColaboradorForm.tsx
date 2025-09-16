@@ -35,6 +35,7 @@ const colaboradorSchema = z.object({
   email: z.string().email("Email inválido").optional().or(z.literal("")),
   telefono: z.string().optional(),
   celular: z.string().optional(),
+  profileImageUrl: z.string().url("URL de imagen inválida").optional().or(z.literal("")),
   activo: z.boolean(),
   observaciones: z.string().optional(),
   // Agregar más campos según sea necesario
@@ -82,6 +83,7 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
       email: colaborador?.mailPersonal || "",
       telefono: colaborador?.telefono || "",
       celular: colaborador?.celular || "",
+      profileImageUrl: colaborador?.profileImageUrl || "",
       activo: colaborador?.activo ?? true,
       observaciones: colaborador?.observaciones || "",
     },
@@ -103,6 +105,7 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
         mailPersonal: data.email || "",
         telefono: data.telefono || "",
         celular: data.celular || "",
+        profileImageUrl: data.profileImageUrl || "",
         activo: data.activo,
         observaciones: data.observaciones || "",
         // Campos requeridos con valores por defecto
@@ -306,6 +309,21 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
                     id="celular"
                     {...form.register("celular")}
                   />
+                </div>
+                <div className="space-y-2 sm:col-span-2">
+                  <Label htmlFor="profileImageUrl">URL de Foto de Perfil</Label>
+                  <Input
+                    id="profileImageUrl"
+                    type="url"
+                    {...form.register("profileImageUrl")}
+                    placeholder="https://ejemplo.com/foto.jpg"
+                    className={form.formState.errors.profileImageUrl ? "border-red-500" : ""}
+                  />
+                  {form.formState.errors.profileImageUrl && (
+                    <p className="text-sm text-red-500">
+                      {form.formState.errors.profileImageUrl.message}
+                    </p>
+                  )}
                 </div>
               </div>
             </CardContent>

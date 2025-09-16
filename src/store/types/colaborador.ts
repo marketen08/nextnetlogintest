@@ -31,6 +31,7 @@ export interface Colaborador {
   telefonoObra?: string;
   mailEmpresa: string;
   mailPersonal?: string;
+  profileImageUrl?: string;
   userId?: string;
   pasaporte: boolean;
   pasaporteNumero?: string;
@@ -112,6 +113,7 @@ export interface ColaboradorRequest {
   telefonoObra?: string;
   mailEmpresa: string;
   mailPersonal?: string;
+  profileImageUrl?: string;
   userId?: string;
   pasaporte: boolean;
   pasaporteNumero?: string;

@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Edit, Trash2, Eye } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Plus, Search, Edit, Trash2, Eye, ChevronLeft, ChevronRight } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { 
   useGetColaboradoresPagedQuery,
@@ -87,6 +88,24 @@ export default function ColaboradoresList() {
   }) || [];
 
   const columns: ColumnDef<Colaborador>[] = [
+    {
+      id: "avatar",
+      header: "",
+      cell: ({ row }) => {
+        const colaborador = row.original;
+        return (
+          <Avatar className="h-8 w-8">
+            <AvatarImage 
+              src={colaborador.profileImageUrl} 
+              alt={`${colaborador.nombre} ${colaborador.apellido}`}
+            />
+            <AvatarFallback className="text-xs">
+              {colaborador.iniciales}
+            </AvatarFallback>
+          </Avatar>
+        );
+      },
+    },
     {
       accessorKey: "legajo",
       header: "Legajo",
@@ -331,18 +350,185 @@ export default function ColaboradoresList() {
           </div>
         </CardHeader>
         <CardContent className="px-2 sm:px-6">
-          <DataTable
-            columns={columns}
-            data={filteredData}
-            isLoading={isLoading}
-            pagination={{
-              page,
-              pageSize,
-              total: data?.total || 0,
-              onPageChange: setPage,
-              onPageSizeChange: setPageSize,
-            }}
-          />
+          {/* Vista de escritorio - Tabla */}
+          <div className="hidden sm:block">
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              isLoading={isLoading}
+              pagination={{
+                page,
+                pageSize,
+                total: data?.total || 0,
+                onPageChange: setPage,
+                onPageSizeChange: setPageSize,
+              }}
+            />
+          </div>
+
+          {/* Vista móvil - Tarjetas */}
+          <div className="block sm:hidden">
+            {isLoading ? (
+              <div className="space-y-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Card key={i} className="p-4">
+                    <div className="space-y-2">
+                      <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-1/2"></div>
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-2/3"></div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredData.map((colaborador) => (
+                  <Card key={colaborador.id} className="p-4 shadow-sm">
+                    <div className="space-y-3">
+                      {/* Cabecera con avatar, nombre y estado */}
+                      <div className="flex items-start gap-3">
+                        <Avatar className="h-10 w-10 mt-0.5">
+                          <AvatarImage 
+                            src={colaborador.profileImageUrl} 
+                            alt={`${colaborador.nombre} ${colaborador.apellido}`}
+                          />
+                          <AvatarFallback className="text-sm">
+                            {colaborador.iniciales}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm truncate">
+                            {colaborador.apellido}, {colaborador.nombre}
+                          </h3>
+                          <p className="text-xs text-muted-foreground">
+                            Legajo: {colaborador.legajo}
+                          </p>
+                        </div>
+                        <Badge 
+                          variant={colaborador.activo ? "default" : "secondary"}
+                          className="ml-2 text-xs"
+                        >
+                          {colaborador.activo ? "Activo" : "Inactivo"}
+                        </Badge>
+                      </div>
+
+                      {/* Información principal */}
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        {colaborador.cuil && (
+                          <div>
+                            <span className="text-muted-foreground">CUIL:</span>
+                            <p className="font-mono font-medium">{colaborador.cuil}</p>
+                          </div>
+                        )}
+                        {colaborador.fechaNacimiento && (
+                          <div>
+                            <span className="text-muted-foreground">F. Nacimiento:</span>
+                            <p className="font-medium">
+                              {new Date(colaborador.fechaNacimiento).toLocaleDateString('es-AR')}
+                            </p>
+                          </div>
+                        )}
+                        {colaborador.ugId && (
+                          <div>
+                            <span className="text-muted-foreground">UG:</span>
+                            <p className="font-medium">{colaborador.ugId}</p>
+                          </div>
+                        )}
+                        {colaborador.celular && (
+                          <div>
+                            <span className="text-muted-foreground">Celular:</span>
+                            <p className="font-mono font-medium">{colaborador.celular}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Email si existe */}
+                      {colaborador.mailEmpresa && (
+                        <div className="pt-1 border-t border-gray-100">
+                          <span className="text-xs text-muted-foreground">Email:</span>
+                          <p className="text-xs font-medium truncate">{colaborador.mailEmpresa}</p>
+                        </div>
+                      )}
+
+                      {/* Botones de acción */}
+                      <div className="flex gap-2 pt-2 border-t border-gray-100">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedColaborador(colaborador);
+                            setIsEditOpen(true);
+                          }}
+                          className="flex-1 h-8 text-xs"
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Editar
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="flex-1 h-8 text-xs">
+                              <Trash2 className="h-3 w-3 mr-1" />
+                              Eliminar
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="w-[90vw] max-w-md mx-4">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="text-base">¿Estás seguro?</AlertDialogTitle>
+                              <AlertDialogDescription className="text-sm">
+                                Esta acción no se puede deshacer. Esto eliminará permanentemente el 
+                                colaborador {colaborador.apellido}, {colaborador.nombre}.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter className="flex-col space-y-2 sm:flex-row sm:space-y-0">
+                              <AlertDialogCancel className="w-full sm:w-auto">Cancelar</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => handleDelete(colaborador.id!)}
+                                className="w-full sm:w-auto bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Eliminar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Paginación móvil */}
+            {data && data.total > 0 && (
+              <div className="flex items-center justify-between mt-4 text-xs">
+                <div className="text-muted-foreground">
+                  {Math.min((page - 1) * pageSize + 1, data.total)} - {Math.min(page * pageSize, data.total)} de {data.total}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(page - 1)}
+                    disabled={page <= 1}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronLeft className="h-3 w-3" />
+                  </Button>
+                  <span className="px-2 text-xs font-medium">
+                    {page} / {Math.ceil(data.total / pageSize)}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(page + 1)}
+                    disabled={page >= Math.ceil(data.total / pageSize)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 
