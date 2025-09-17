@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Plus, Search, Edit, Trash2, Eye, ChevronLeft, ChevronRight } from "lucide-react";
+import { ServerImageAvatar } from "@/components/ui/server-image-avatar";
+import { toast } from "sonner";
+import { Plus, Search, Edit, Trash2, Eye, ChevronLeft, ChevronRight, Copy } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
 import { 
   useGetColaboradoresPagedQuery,
@@ -46,7 +48,7 @@ export default function ColaboradoresList() {
 
   // Get user info for debugging
   const user = useSelector((state: RootState) => state.user);
-  console.log('Current user:', user);
+//   console.log('Current user:', user);
 
   const { data, isLoading, error } = useGetColaboradoresPagedQuery({ 
     page, 
@@ -74,6 +76,16 @@ export default function ColaboradoresList() {
     }
   };
 
+  const handleCopyCuil = async (cuil: string) => {
+    try {
+      await navigator.clipboard.writeText(cuil);
+      toast.success(`CUIL ${cuil} copiado al portapapeles`);
+    } catch (error) {
+      console.error('Error copying CUIL:', error);
+      toast.error('Error al copiar CUIL');
+    }
+  };
+
   const filteredData = data?.data?.filter((colaborador) => {
     if (!search) return true;
     const searchLower = search.toLowerCase();
@@ -82,7 +94,9 @@ export default function ColaboradoresList() {
       colaborador.nombre?.toLowerCase().includes(searchLower) ||
       colaborador.apellido?.toLowerCase().includes(searchLower) ||
       colaborador.cuil?.toLowerCase().includes(searchLower) ||
-      colaborador.ugId?.toLowerCase().includes(searchLower) ||
+      colaborador.sucursalId?.toLowerCase().includes(searchLower) ||
+      colaborador.sucursalNombre?.toLowerCase().includes(searchLower) ||
+      colaborador.empresaNombre?.toLowerCase().includes(searchLower) ||
       colaborador.mailEmpresa?.toLowerCase().includes(searchLower)
     );
   }) || [];
@@ -94,15 +108,12 @@ export default function ColaboradoresList() {
       cell: ({ row }) => {
         const colaborador = row.original;
         return (
-          <Avatar className="h-8 w-8">
-            <AvatarImage 
-              src={colaborador.profileImageUrl} 
-              alt={`${colaborador.nombre} ${colaborador.apellido}`}
-            />
-            <AvatarFallback className="text-xs">
-              {colaborador.iniciales}
-            </AvatarFallback>
-          </Avatar>
+          <ServerImageAvatar
+            src={colaborador.profileImageUrl}
+            alt={`${colaborador.nombre} ${colaborador.apellido}`}
+            fallback={colaborador.iniciales}
+            size="sm"
+          />
         );
       },
     },
@@ -137,8 +148,21 @@ export default function ColaboradoresList() {
       cell: ({ row }) => {
         const cuil = row.getValue("cuil") as string;
         return (
-          <div className="font-mono text-sm">
-            {cuil || '-'}
+          <div className="flex items-center gap-2">
+            <div className="font-mono text-sm">
+              {cuil || '-'}
+            </div>
+            {cuil && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                onClick={() => handleCopyCuil(cuil)}
+                title="Copiar CUIL"
+              >
+                <Copy className="h-3 w-3" />
+              </Button>
+            )}
           </div>
         );
       },
@@ -156,13 +180,27 @@ export default function ColaboradoresList() {
       },
     },
     {
-      accessorKey: "ugId",
-      header: "UG",
+      accessorKey: "sucursalId",
+      header: "Sucursal",
       cell: ({ row }) => {
-        const ugId = row.getValue("ugId") as string;
+        const colaborador = row.original;
+        const sucursalNombre = colaborador.sucursalNombre;
+        const sucursalId = colaborador.sucursalId;
         return (
           <div className="text-sm">
-            {ugId || '-'}
+            {sucursalNombre || sucursalId || '-'}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "empresaNombre",
+      header: "Empresa",
+      cell: ({ row }) => {
+        const empresaNombre = row.getValue("empresaNombre") as string;
+        return (
+          <div className="text-sm">
+            {empresaNombre || '-'}
           </div>
         );
       },
@@ -201,18 +239,18 @@ export default function ColaboradoresList() {
         );
       },
     },
-    {
-      accessorKey: "activo",
-      header: "Estado",
-      cell: ({ row }) => {
-        const activo = row.getValue("activo") as boolean;
-        return (
-          <Badge variant={activo ? "default" : "secondary"}>
-            {activo ? "Activo" : "Inactivo"}
-          </Badge>
-        );
-      },
-    },
+    // {
+    //   accessorKey: "activo",
+    //   header: "Estado",
+    //   cell: ({ row }) => {
+    //     const activo = row.getValue("activo") as boolean;
+    //     return (
+    //       <Badge variant={activo ? "default" : "secondary"}>
+    //         {activo ? "Activo" : "Inactivo"}
+    //       </Badge>
+    //     );
+    //   },
+    // },
     {
       id: "actions",
       header: "Acciones",
@@ -228,12 +266,12 @@ export default function ColaboradoresList() {
                 setSelectedColaborador(colaborador);
                 setIsEditOpen(true);
               }}
-              className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
+              className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3 cursor-pointer"
             >
               <Edit className="h-4 w-4" />
               <span className="hidden sm:ml-2 sm:inline">Editar</span>
             </Button>
-            <AlertDialog>
+            {/* <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3">
                   <Trash2 className="h-4 w-4" />
@@ -258,7 +296,7 @@ export default function ColaboradoresList() {
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
-            </AlertDialog>
+            </AlertDialog> */}
           </div>
         );
       },
@@ -320,7 +358,7 @@ export default function ColaboradoresList() {
               <span className="xs:hidden">Agregar</span>
             </Button>
           </DialogTrigger>
-          <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+          <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
             <DialogHeader>
               <DialogTitle>Crear Nuevo Colaborador</DialogTitle>
             </DialogHeader>
@@ -387,15 +425,13 @@ export default function ColaboradoresList() {
                     <div className="space-y-3">
                       {/* Cabecera con avatar, nombre y estado */}
                       <div className="flex items-start gap-3">
-                        <Avatar className="h-10 w-10 mt-0.5">
-                          <AvatarImage 
-                            src={colaborador.profileImageUrl} 
-                            alt={`${colaborador.nombre} ${colaborador.apellido}`}
-                          />
-                          <AvatarFallback className="text-sm">
-                            {colaborador.iniciales}
-                          </AvatarFallback>
-                        </Avatar>
+                        <ServerImageAvatar
+                          src={colaborador.profileImageUrl}
+                          alt={`${colaborador.nombre} ${colaborador.apellido}`}
+                          fallback={colaborador.iniciales}
+                          size="md"
+                          className="mt-0.5"
+                        />
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-sm truncate">
                             {colaborador.apellido}, {colaborador.nombre}
@@ -417,7 +453,18 @@ export default function ColaboradoresList() {
                         {colaborador.cuil && (
                           <div>
                             <span className="text-muted-foreground">CUIL:</span>
-                            <p className="font-mono font-medium">{colaborador.cuil}</p>
+                            <div className="flex items-center gap-1">
+                              <p className="font-mono font-medium">{colaborador.cuil}</p>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-5 w-5 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
+                                onClick={() => handleCopyCuil(colaborador.cuil!)}
+                                title="Copiar CUIL"
+                              >
+                                <Copy className="h-3 w-3" />
+                              </Button>
+                            </div>
                           </div>
                         )}
                         {colaborador.fechaNacimiento && (
@@ -428,10 +475,16 @@ export default function ColaboradoresList() {
                             </p>
                           </div>
                         )}
-                        {colaborador.ugId && (
+                        {(colaborador.sucursalId || colaborador.sucursalNombre) && (
                           <div>
-                            <span className="text-muted-foreground">UG:</span>
-                            <p className="font-medium">{colaborador.ugId}</p>
+                            <span className="text-muted-foreground">Sucursal:</span>
+                            <p className="font-medium">{colaborador.sucursalNombre || colaborador.sucursalId}</p>
+                          </div>
+                        )}
+                        {colaborador.empresaNombre && (
+                          <div>
+                            <span className="text-muted-foreground">Empresa:</span>
+                            <p className="font-medium">{colaborador.empresaNombre}</p>
                           </div>
                         )}
                         {colaborador.celular && (
@@ -459,7 +512,7 @@ export default function ColaboradoresList() {
                             setSelectedColaborador(colaborador);
                             setIsEditOpen(true);
                           }}
-                          className="flex-1 h-8 text-xs"
+                          className="flex-1 h-8 text-xs cursor-pointer"
                         >
                           <Edit className="h-3 w-3 mr-1" />
                           Editar
@@ -534,7 +587,7 @@ export default function ColaboradoresList() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+        <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] overflow-y-auto p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle>
               Editar Colaborador - {selectedColaborador?.apellido}, {selectedColaborador?.nombre}

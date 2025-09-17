@@ -2,11 +2,14 @@ export interface Colaborador {
   id?: string;
   legajo: string;
   empresaId: string;
+  empresaNombre: string;
   empresaTrabajaId: string;
+  empresaTrabajaNombre: string;
   apellido: string;
   nombre: string;
   iniciales: string;
   tipoDocumentoId: string;
+  tipoDocumentoNombre: string;
   numeroDocumento: string;
   fechaVencimientoDocumento?: string;
   nacionalidad?: string;
@@ -44,7 +47,8 @@ export interface Colaborador {
   osDetallePlan?: string;
   osCodigo?: string;
   proyectoId: string;
-  ugId: string;
+  sucursalId: string;
+  sucursalNombre: string;
   ubicacion?: string;
   grupoSanguineo?: string;
   calzado?: string;
@@ -84,11 +88,14 @@ export interface Colaborador {
 export interface ColaboradorRequest {
   legajo: string;
   empresaId: string;
+  empresaNombre: string;
   empresaTrabajaId: string;
+  empresaTrabajaNombre: string;
   apellido: string;
   nombre: string;
   iniciales: string;
   tipoDocumentoId: string;
+  tipoDocumentoNombre: string;
   numeroDocumento: string;
   fechaVencimientoDocumento?: string;
   nacionalidad?: string;
@@ -126,7 +133,8 @@ export interface ColaboradorRequest {
   osDetallePlan?: string;
   osCodigo?: string;
   proyectoId: string;
-  ugId: string;
+  sucursalId: string;
+  sucursalNombre: string;
   ubicacion?: string;
   grupoSanguineo?: string;
   calzado?: string;

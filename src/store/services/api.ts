@@ -86,6 +86,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const api = createApi({
     // baseQuery: __DEV__ ? wrapperBaseQuery : orignalBaseQuery,
     baseQuery: baseQueryWithReauth,
-    tagTypes: ['Profile', 'KpiMetrics', 'CliPro', 'User', 'Cliente', 'Recursos', 'Colaboradores', 'Roles', 'UserRoles'],
+    tagTypes: ['Profile', 'KpiMetrics', 'CliPro', 'User', 'Cliente', 'Recursos', 'Colaboradores', 'Roles', 'UserRoles', 'TipoDocumento'],
     endpoints: () => ({}),
 })

@@ -45,7 +45,7 @@ export default function RecursosList() {
 
   // Get user info for debugging
   const user = useSelector((state: RootState) => state.user);
-  console.log('Current user:', user);
+  // console.log('Current user:', user);
 
   const { data, isLoading, error } = useGetRecursosPagedQuery({ 
     page, 

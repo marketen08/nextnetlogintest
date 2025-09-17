@@ -8,10 +8,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { ImageUpload } from "@/components/ui/image-upload";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
   useCreateColaboradorMutation, 
   useUpdateColaboradorMutation 
 } from "@/store/services/colaboradores";
+import { useGetTiposDocumentosListQuery } from "@/store/services/tiposDocumentos";
 import { Colaborador, ColaboradorRequest } from "@/store/types/colaborador";
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -52,6 +61,11 @@ interface ColaboradorFormProps {
 export function ColaboradorForm({ colaborador, onSuccess, onCancel }: ColaboradorFormProps) {
   const [createColaborador, { isLoading: isCreating }] = useCreateColaboradorMutation();
   const [updateColaborador, { isLoading: isUpdating }] = useUpdateColaboradorMutation();
+  const { data: tiposDocumentos, isLoading: isLoadingTipos } = useGetTiposDocumentosListQuery();
+  
+  // Debug: Ver qué datos de colaborador estamos recibiendo
+  console.log('Colaborador recibido:', colaborador);
+  console.log('Fecha de nacimiento original:', colaborador?.fechaNacimiento);
   
   const [sectionsOpen, setSectionsOpen] = useState({
     personal: true,
@@ -67,6 +81,20 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
   const isEditing = !!colaborador;
   const isSubmitting = isCreating || isUpdating;
 
+  // Función para formatear fecha al formato requerido por input date (YYYY-MM-DD)
+  const formatDateForInput = (dateString?: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "";
+      const formatted = date.toISOString().split('T')[0];
+      console.log('Formateo de fecha:', { original: dateString, formatted });
+      return formatted;
+    } catch {
+      return "";
+    }
+  };
+
   const form = useForm<ColaboradorFormData>({
     resolver: zodResolver(colaboradorSchema),
     defaultValues: {
@@ -76,7 +104,7 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
       tipoDocumento: colaborador?.tipoDocumentoId || "",
       numeroDocumento: colaborador?.numeroDocumento || "",
       cuit: colaborador?.cuil || "",
-      fechaNacimiento: colaborador?.fechaNacimiento || "",
+      fechaNacimiento: formatDateForInput(colaborador?.fechaNacimiento),
       sexo: colaborador?.sexo || "",
       estadoCivil: colaborador?.estadoCivil || "",
       nacionalidad: colaborador?.nacionalidad || "",
@@ -91,14 +119,19 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
 
   const onSubmit = async (data: ColaboradorFormData) => {
     try {
+      // Buscar el nombre del tipo de documento
+      const tipoDocumentoId = data.tipoDocumento || colaborador?.tipoDocumentoId || "";
+      const tipoDocumento = tiposDocumentos?.data.find(tipo => tipo.id === tipoDocumentoId);
+      
       const colaboradorData: Partial<ColaboradorRequest> = {
-        legajo: data.numeroLegajo || "",
+        legajo: data.numeroLegajo || colaborador?.legajo || "",
         apellido: data.apellido,
         nombre: data.nombre,
-        tipoDocumentoId: data.tipoDocumento || "",
+        tipoDocumentoId: tipoDocumentoId,
+        tipoDocumentoNombre: tipoDocumento?.nombre || colaborador?.tipoDocumentoNombre || "",
         numeroDocumento: data.numeroDocumento,
         cuil: data.cuit || "",
-        fechaNacimiento: data.fechaNacimiento || "",
+        fechaNacimiento: data.fechaNacimiento || new Date().toISOString().split('T')[0],
         sexo: data.sexo || "",
         estadoCivil: data.estadoCivil || "",
         nacionalidad: data.nacionalidad || "",
@@ -108,18 +141,28 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
         profileImageUrl: data.profileImageUrl || "",
         activo: data.activo,
         observaciones: data.observaciones || "",
-        // Campos requeridos con valores por defecto
-        empresaId: "default-empresa",
-        empresaTrabajaId: "default-empresa-trabaja",
+        // Campos requeridos con valores por defecto o del colaborador existente
+        empresaId: colaborador?.empresaId || "default-empresa",
+        empresaNombre: colaborador?.empresaNombre || "Empresa Default",
+        empresaTrabajaId: colaborador?.empresaTrabajaId || "default-empresa-trabaja",
+        empresaTrabajaNombre: colaborador?.empresaTrabajaNombre || "Empresa Trabaja Default",
         iniciales: `${data.nombre.charAt(0)}${data.apellido.charAt(0)}`,
-        fechaIngreso: new Date().toISOString().split('T')[0],
-        sectorId: "default-sector",
-        mailEmpresa: data.email || "",
-        pasaporte: false,
-        registro: false,
-        proyectoId: "default-proyecto",
-        ugId: "default-ug"
+        fechaIngreso: colaborador?.fechaIngreso || new Date().toISOString().split('T')[0],
+        sectorId: colaborador?.sectorId || "default-sector",
+        mailEmpresa: data.email || colaborador?.mailEmpresa || "",
+        pasaporte: colaborador?.pasaporte || false,
+        registro: colaborador?.registro || false,
+        proyectoId: colaborador?.proyectoId || "default-proyecto",
+        sucursalId: colaborador?.sucursalId || "default-sucursal",
+        sucursalNombre: colaborador?.sucursalNombre || "Sucursal Default"
       };
+
+      console.log('Datos que se van a enviar:', {
+        isEditing,
+        tipoDocumentoId: colaboradorData.tipoDocumentoId,
+        tipoDocumentoNombre: colaboradorData.tipoDocumentoNombre,
+        colaboradorData
+      });
 
       if (isEditing && colaborador?.id) {
         await updateColaborador({ 
@@ -201,10 +244,22 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tipoDocumento">Tipo de Documento</Label>
-                  <Input
-                    id="tipoDocumento"
-                    {...form.register("tipoDocumento")}
-                  />
+                  <Select
+                    value={form.watch("tipoDocumento")}
+                    onValueChange={(value) => form.setValue("tipoDocumento", value)}
+                    disabled={isLoadingTipos}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={isLoadingTipos ? "Cargando..." : "Seleccionar tipo de documento"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {tiposDocumentos?.data.map((tipo) => (
+                        <SelectItem key={tipo.id} value={tipo.id}>
+                          {tipo.nombre} - {tipo.descripcion}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="numeroDocumento">Número de Documento *</Label>
@@ -236,10 +291,18 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="sexo">Sexo</Label>
-                  <Input
-                    id="sexo"
-                    {...form.register("sexo")}
-                  />
+                  <Select
+                    value={form.watch("sexo")}
+                    onValueChange={(value) => form.setValue("sexo", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar sexo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="M">M</SelectItem>
+                      <SelectItem value="F">F</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="estadoCivil">Estado Civil</Label>
@@ -311,18 +374,20 @@ export function ColaboradorForm({ colaborador, onSuccess, onCancel }: Colaborado
                   />
                 </div>
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="profileImageUrl">URL de Foto de Perfil</Label>
-                  <Input
-                    id="profileImageUrl"
-                    type="url"
-                    {...form.register("profileImageUrl")}
-                    placeholder="https://ejemplo.com/foto.jpg"
-                    className={form.formState.errors.profileImageUrl ? "border-red-500" : ""}
+                  <ImageUpload
+                    currentImageUrl={form.watch("profileImageUrl")}
+                    colaboradorId={colaborador?.id}
+                    iniciales={`${form.watch("nombre")?.charAt(0) || ""}${form.watch("apellido")?.charAt(0) || ""}`}
+                    onImageUploaded={(imageUrl) => {
+                      console.log('Imagen subida:', imageUrl);
+                      form.setValue("profileImageUrl", imageUrl);
+                    }}
                   />
-                  {form.formState.errors.profileImageUrl && (
-                    <p className="text-sm text-red-500">
-                      {form.formState.errors.profileImageUrl.message}
-                    </p>
+                  {/* Debug: Mostrar el valor actual */}
+                  {process.env.NODE_ENV === 'development' && (
+                    <div className="text-xs text-gray-500">
+                      profileImageUrl: {form.watch("profileImageUrl") || "No asignada"}
+                    </div>
                   )}
                 </div>
               </div>
